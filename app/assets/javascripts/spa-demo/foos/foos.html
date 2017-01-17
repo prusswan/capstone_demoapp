@@ -2,7 +2,7 @@
   <h3>Foos</h3>
   <span>(from spa-demo/foos/foos.html)</span>
 
-  <form>
+  <form name="fooForm">
     <div>
       <label>Name:</label>
       <input name="name"
@@ -10,16 +10,17 @@
               required="required"/>
     </div>
 
-    <button ng-if="!foosVM.foo.id" 
+    <button ng-if="!foosVM.foo.id"
              type="submit"
-             ng-click="foosVM.create()">Create Foo</button>  
+             ng-disabled="fooForm.$invalid"
+             ng-click="foosVM.create()">Create Foo</button>
     <div ng-if="foosVM.foo.id">
       <button type="submit"
               ng-click="foosVM.update()">Update Foo</button>
       <button type="submit"
               ng-click="foosVM.remove()">Delete Foo</button>
-    </div>               
-    </form>
+    </div>
+  </form>
 
   <ul>
     <li ng-repeat="foo in foosVM.foos | orderBy:'name'">

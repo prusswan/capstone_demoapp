@@ -19,7 +19,7 @@ class FoosController < ApplicationController
       #render json: @foo, status: :created, location: @foo
       render :show, status: :created, location: @foo
     else
-      render json: @foo.errors, status: :unprocessable_entity
+      render json: {errors: @foo.errors}, status: :unprocessable_entity
     end
   end
 

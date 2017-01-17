@@ -47,6 +47,10 @@ RSpec.feature "ManageFoos", type: :feature, :js=>true do
       expect(page).to have_button("Create Foo")
     end
 
+    scenario "Create button disabled when no name" do
+      expect(page).to have_button("Create Foo", disabled: true)
+    end
+
     scenario "complete form" do
       within(:xpath,FOO_FORM_XPATH) do
         fill_in("name", :with=>foo_state[:name])

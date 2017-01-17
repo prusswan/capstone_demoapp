@@ -34,6 +34,7 @@ FactoryGirl.define do
   end
 
   factory :foo, :parent=>:foo_faker do
+    sequence(:name) {|n| "name#{n%10}"}
   end
 
   factory :bar do

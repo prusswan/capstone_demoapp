@@ -43,7 +43,7 @@ RSpec.feature "AuthzRoles", type: :feature, js:true, focus: true do
 
   shared_examples "displays correct buttons for role" do |displayed,not_displayed|
     it "displays correct buttons" do
-      within("sd-thing-editor .thing-form") do
+      within("sd-role-editor .role-form") do
         displayed.each do |button|
           #create is present and disabled until name filled in
           disabled_value = ["Create Thing","Update Thing"].include? button
@@ -214,7 +214,7 @@ RSpec.feature "AuthzRoles", type: :feature, js:true, focus: true do
     end
   end
 
-  context "no thing selected" do
+  context "no role selected" do
     after(:each) { logout }
 
     context "unauthenticated user" do
@@ -222,14 +222,14 @@ RSpec.feature "AuthzRoles", type: :feature, js:true, focus: true do
       it_behaves_like "cannot list roles"
       it_behaves_like "displays correct buttons for role",
           [],
-          ["Create Thing", "Clear Thing", "Update Thing", "Delete Thing"]
+          ["Create Role", "Clear Role", "Update Role", "Delete Role"]
     end
     context "authenticated user" do
-      before(:each) { login authenticated; visit_things things}
+      before(:each) { login authenticated; visit_roles roles}
       it_behaves_like "cannot list roles"
       it_behaves_like "displays correct buttons for role",
           [],
-          ["Create Thing"], ["Clear Thing", "Update Thing", "Delete Thing"]
+          ["Create Role"], ["Clear Role", "Update Role", "Delete Role"]
     end
     # context "originator user" do
     #   before(:each) { login originator; visit_things things }

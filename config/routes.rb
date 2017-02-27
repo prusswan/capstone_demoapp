@@ -15,6 +15,14 @@ Rails.application.routes.draw do
     end
     resources :things, except: [:new, :edit] do
       resources :thing_images, only: [:index, :create, :update, :destroy]
+
+      scope module: 'things' do
+        resources :roles, only: [:index, :create, :update, :destroy] do
+          collection do
+            get :members, :organizers
+          end
+        end
+      end
     end
 
     resources :roles, only: [:index, :show, :create, :update, :destroy]

@@ -115,21 +115,26 @@
     </div>
   </div>
 
-  <div class="thing-roles row">
-    <div class="col-xs-3">
-      <label>Roles</label>
-    </div>
-    <ul class="col-xs-9">
-    </ul>
-  </div>
+  <h4>Roles Management</h4>
 
   <div class="thing-organizers row">
     <div class="col-xs-3">
       <label>Organizers</label>
     </div>
-    <ul class="col-xs-9">
-      <li ng-repeat="r in $ctrl.organizers | orderBy:'user_id'">
-        {{r.id}} - User: {{ r.user | json }}
+
+    <ul class="col-xs-9 list-group">
+      <li class="list-group-item" ng-repeat="r in $ctrl.organizers | orderBy:'user_id'">
+        <div class="row">
+          <div class="col-xs-6">
+            {{r.id}} - User: {{ r.user | json }}
+          </div>
+
+          <div class="col-xs-6">
+            <button name="organizer-remove"
+                    type="submit"
+                    ng-click="$ctrl.removeOrganizer()">Remove Organizer</button>
+          </div>
+        </div>
       </li>
     </ul>
   </div>
@@ -138,10 +143,46 @@
     <div class="col-xs-3">
       <label>Members</label>
     </div>
-    <ul class="col-xs-9">
-      <li ng-repeat="r in $ctrl.members | orderBy:'user_id'">
-        {{r.id}} - User: {{ r.user | json }}
+
+    <ul class="col-xs-9 list-group">
+      <li class="list-group-item" ng-repeat="r in $ctrl.members | orderBy:'user_id'">
+        <div class="row">
+          <div class="col-xs-6">
+            {{r.id}} - User: {{ r.user | json }}
+          </div>
+
+          <div class="col-xs-6">
+            <button name="member-remove"
+                    type="submit"
+                    ng-click="$ctrl.removeMember()">Remove Member</button>
+          </div>
+        </div>
       </li>
     </ul>
   </div>
+
+  <div class="thing-roles row">
+    <div class="col-xs-3">
+      <label>Select user:</label>
+    </div>
+
+    <div class="form-horizontal form-group">
+      <div class="col-xs-3">
+        <select class="form-control" ng-model="$ctrl.selectUser" ng-options="u.id as u.email for u in $ctrl.users track by u.id"></select>
+      </div>
+      <div class="col-xs-2">
+        <label class="control-label">id: {{ $ctrl.selectUser }}</label>
+      </div>
+
+      <div class="col-xs-4">
+        <button name="member-add"
+                type="submit"
+                ng-click="$ctrl.addMember()">Add Member</button>
+        <button name="organizer-add"
+                type="submit"
+                ng-click="$ctrl.addOrganizer()">Add Organizer</button>
+      </div>
+    </div>
+  </div>
+
 </form>

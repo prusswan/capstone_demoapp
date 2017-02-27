@@ -35,11 +35,12 @@
   ThingEditorController.$inject = ["$scope","$q",
                                    "$state","$stateParams",
                                    "spa-demo.authz.Authz",
+                                   "spa-demo.subjects.User",
                                    "spa-demo.subjects.Thing",
                                    "spa-demo.subjects.ThingRoles",
                                    "spa-demo.subjects.ThingImage"];
   function ThingEditorController($scope, $q, $state, $stateParams,
-                                 Authz, Thing, ThingRoles, ThingImage) {
+                                 Authz, User, Thing, ThingRoles, ThingImage) {
     var vm=this;
     vm.create = create;
     vm.clear  = clear;
@@ -74,6 +75,7 @@
       vm.images = ThingImage.query({thing_id:itemId});
       vm.members = ThingRoles.members({thing_id:itemId});
       vm.organizers = ThingRoles.organizers({thing_id:itemId});
+      vm.users = User.query();
 
       vm.item = Thing.get({id:itemId});
       vm.thingsAuthz.newItem(vm.item);

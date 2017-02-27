@@ -168,10 +168,10 @@
 
     <div class="form-horizontal form-group">
       <div class="col-xs-3">
-        <select class="form-control" ng-model="$ctrl.selectUser" ng-options="u.id as u.email for u in $ctrl.users track by u.id"></select>
+        <select class="form-control" ng-model="$ctrl.selectUserId" ng-options="u.id as u.email for u in $ctrl.users track by u.id"></select>
       </div>
       <div class="col-xs-2">
-        <label class="control-label">id: {{ $ctrl.selectUser }}</label>
+        <label class="control-label">id: {{ $ctrl.selectUserId }}</label>
       </div>
 
       <div class="col-xs-4">

@@ -6,8 +6,15 @@ class Things::RolesController < ApplicationController
   after_action :verify_authorized
 
   def index
-    authorize @thing, :index?
-    @roles = @thing.roles
+    case params[:role_name]
+    when 'members'
+      return members
+    when 'organizers'
+      return organizers
+    else
+      authorize @thing, :index?
+      @roles = @thing.roles
+    end
   end
 
   def members
@@ -59,7 +66,7 @@ class Things::RolesController < ApplicationController
     end
 
     def set_role
-      @role = Role.find(params[:id])
+      @role = Role.find(params[:user_id])
     end
 
     def role_params

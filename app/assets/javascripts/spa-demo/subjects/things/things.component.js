@@ -48,6 +48,8 @@
     vm.remove  = remove;
     vm.haveDirtyLinks = haveDirtyLinks;
     vm.updateImageLinks = updateImageLinks;
+    vm.addMember = addMember;
+    vm.addOrganizer = addOrganizer;
 
     vm.$onInit = function() {
       console.log("ThingEditorController",$scope);
@@ -73,8 +75,8 @@
       var itemId = thingId ? thingId : vm.item.id;
       console.log("re/loading thing", itemId);
       vm.images = ThingImage.query({thing_id:itemId});
-      vm.members = ThingRoles.members({thing_id:itemId});
-      vm.organizers = ThingRoles.organizers({thing_id:itemId});
+      vm.members = ThingRoles.query({thing_id:itemId, role_name:'members'});
+      vm.organizers = ThingRoles.query({thing_id:itemId, role_name:'organizers'});
       vm.users = User.query();
 
       vm.item = Thing.get({id:itemId});
@@ -147,6 +149,13 @@
           clear();
         },
         handleError);
+    }
+
+    function addMember() {
+      console.log("add member", vm.selectUserId);
+    }
+    function addOrganizer() {
+      console.log("add organizer", vm.selectUserId);
     }
 
     function handleError(response) {

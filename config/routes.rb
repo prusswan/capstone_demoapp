@@ -17,10 +17,10 @@ Rails.application.routes.draw do
       resources :thing_images, only: [:index, :create, :update, :destroy]
 
       scope module: 'things' do
-        resources :roles, only: [:index, :create, :update, :destroy] do
-          collection do
-            get :members, :organizers
-          end
+        resources :roles, only: [:index, :create, :update, :destroy], path: 'roles/:role_name', param: :user_id do
+          # collection do
+          #   get :members, :organizers
+          # end
         end
       end
     end

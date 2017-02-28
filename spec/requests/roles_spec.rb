@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Roles", type: :request, focus: true do
+RSpec.describe "Roles", type: :request do
   include_context "db_cleanup_each"
   # let(:organizer) { apply_organizer(signup(FactoryGirl.attributes_for(:user)), Role) }
   let(:account) { signup FactoryGirl.attributes_for(:user) }

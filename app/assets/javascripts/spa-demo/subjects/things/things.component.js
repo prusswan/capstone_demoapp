@@ -55,13 +55,17 @@
     vm.addOriginator = addOriginator;
     vm.removeOriginator = removeOriginator;
 
-    vm.originators = ThingRoles.query({role_name:'originator'});
+    vm.originators = [];
     vm.users = User.query();
 
     vm.$onInit = function() {
       console.log("ThingEditorController",$scope);
       $scope.$watch(function(){ return Authz.getAuthorizedUserId(); },
                     function(){
+                      if (Authz.isAuthenticated()) {
+                        vm.originators = ThingRoles.query({role_name:'originator'});
+                      }
+
                       if ($stateParams.id) {
                         reload($stateParams.id);
                       } else {

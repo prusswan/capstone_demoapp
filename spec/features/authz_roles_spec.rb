@@ -1,7 +1,7 @@
 require 'rails_helper'
 require_relative '../support/subjects_ui_helper.rb'
 
-RSpec.feature "AuthzRoles", type: :feature, js:true, focus: true do
+RSpec.feature "AuthzRoles", type: :feature, js:true do
   include_context "db_cleanup_each"
   include SubjectsUiHelper
 

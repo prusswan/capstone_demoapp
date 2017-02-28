@@ -17,7 +17,7 @@ Rails.application.routes.draw do
       resources :thing_images, only: [:index, :create, :update, :destroy]
     end
 
-    scope 'things(/:thing_id)', module: 'things' do
+    namespace :things, path: 'things(/:thing_id)' do
       resources :roles, only: [:index, :create, :destroy], path: 'roles/:role_name', param: :user_id do
         # collection do
         #   get :members, :organizers

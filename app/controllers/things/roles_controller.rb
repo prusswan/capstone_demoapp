@@ -55,7 +55,7 @@ class Things::RolesController < ApplicationController
     # @role = Role.new(role_params)
 
     if @role.new_record? && @role.save
-      render :show, status: :created, location: @role
+      render :show, status: :created #, location: @role
     else
       @role.errors.add(:base, :role_exists, message: "user already has the role #{params[:role_name]}") if !@role.new_record?
       render json: @role.errors, status: :unprocessable_entity
@@ -83,7 +83,7 @@ class Things::RolesController < ApplicationController
       authorize @thing, :modify_organizer?
       @role = user.add_role(Role::ORGANIZER, @thing)
     when Role::ORIGINATOR
-      authorize @thing, :set_originator?
+      authorize Thing, :set_originator?
       @role = user.add_role(Role::ORIGINATOR, Thing)
     end
 
@@ -94,7 +94,7 @@ class Things::RolesController < ApplicationController
 
   private
     def set_thing
-      @thing = Thing.find(params[:thing_id])
+      @thing = Thing.find_by(id: params[:thing_id])
     end
 
     # def set_role

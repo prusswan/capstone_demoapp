@@ -15,13 +15,13 @@ Rails.application.routes.draw do
     end
     resources :things, except: [:new, :edit] do
       resources :thing_images, only: [:index, :create, :update, :destroy]
+    end
 
-      scope module: 'things' do
-        resources :roles, only: [:index, :create, :destroy], path: 'roles/:role_name', param: :user_id do
-          # collection do
-          #   get :members, :organizers
-          # end
-        end
+    scope 'things(/:thing_id)', module: 'things' do
+      resources :roles, only: [:index, :create, :destroy], path: 'roles/:role_name', param: :user_id do
+        # collection do
+        #   get :members, :organizers
+        # end
       end
     end
 

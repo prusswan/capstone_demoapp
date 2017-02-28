@@ -12,7 +12,7 @@ class Things::RolesController < ApplicationController
     when Role::ORGANIZER
       return organizers
     when Role::ORIGINATOR
-      authorize @thing, :get_originators?
+      authorize Thing, :get_originators?
       @roles = Role.where(role_name: Role::ORIGINATOR, mname: Thing)
     else
       authorize @thing, :index?
@@ -48,7 +48,7 @@ class Things::RolesController < ApplicationController
       authorize @thing, :modify_organizer?
       @role = user.add_role(Role::ORGANIZER, @thing)
     when Role::ORIGINATOR
-      authorize @thing, :set_originator?
+      authorize Thing, :set_originator?
       @role = user.add_role(Role::ORIGINATOR, Thing)
     end
 

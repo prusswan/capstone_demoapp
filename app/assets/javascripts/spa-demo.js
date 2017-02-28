@@ -1,11 +1,13 @@
 // SPA Demo Javascript Manifest File
 //= require jquery2
+//= require datatables.net
 //= require bootstrap
 //= require angular
 //= require angular-ui-router
 //= require angular-resource
 //= require angular-cookie
 //= require ng-token-auth
+//= require angular-datatables
 
 //= require spa-demo/app.module
 //= require spa-demo/app.router
@@ -34,6 +36,7 @@
 //= require spa-demo/foos/foos.directive
 
 //= require spa-demo/subjects/subjects.module
+//= require spa-demo/subjects/roles/roles.service
 //= require spa-demo/subjects/users/users.service
 //= require spa-demo/subjects/images/images.service
 //= require spa-demo/subjects/images/images_authz.service

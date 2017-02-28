@@ -27,7 +27,12 @@
     })
     .state("roles",{
       url: "/roles/:id",
-      templateUrl: APP_CONFIG.roles_page_html
+      templateUrl: APP_CONFIG.roles_page_html,
+      resolve: {
+        roles: ["spa-demo.subjects.Role", function(Role) {
+          return Role.query();
+        }]
+      }
     })
     .state("images",{
       url: "/images/:id",

@@ -22,7 +22,7 @@
     }
   }
 
-  ThingAuthzController.$inject = ["$scope", 
+  ThingAuthzController.$inject = ["$scope",
                                   "spa-demo.subjects.ThingsAuthz"];
   function ThingAuthzController($scope, ThingsAuthz) {
     var vm = this;
@@ -54,11 +54,11 @@
         vm.authz.canDelete      = false;
         vm.authz.canGetDetails  = false;
         vm.authz.canUpdateImage = false;
-        vm.authz.canRemoveImage = false;      
+        vm.authz.canRemoveImage = false;
         item.$promise.then(function(){ checkAccess(item); });
       } else {
         checkAccess(item);
-      }      
+      }
     }
 
     function checkAccess(item) {
@@ -66,12 +66,17 @@
       vm.authz.canDelete     = ThingsAuthz.canDelete(item);
       vm.authz.canGetDetails = ThingsAuthz.canGetDetails(item);
       vm.authz.canUpdateImage = ThingsAuthz.canUpdateImage(item);
-      vm.authz.canRemoveImage = ThingsAuthz.canRemoveImage(item);      
+      vm.authz.canRemoveImage = ThingsAuthz.canRemoveImage(item);
+      vm.authz.canGetMembers = ThingsAuthz.canGetMembers(item);
+      vm.authz.canGetOrganizers = ThingsAuthz.canGetOrganizers(item);
+      vm.authz.canModifyMember = ThingsAuthz.canModifyMember(item);
+      vm.authz.canModifyOrganizer = ThingsAuthz.canModifyOrganizer(item);
+      vm.authz.canSetOriginator = ThingsAuthz.canSetOriginator();
       console.log("checkAccess", item, vm.authz);
     }
 
     function canUpdateItem(item) {
       return ThingsAuthz.canUpdate(item);
-    }    
+    }
   }
 })();

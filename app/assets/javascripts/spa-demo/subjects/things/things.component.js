@@ -80,12 +80,18 @@
       console.log("re/loading thing", itemId);
       vm.images = ThingImage.query({thing_id:itemId});
       vm.originators = ThingRoles.query({thing_id:itemId, role_name:'originator'});
-      vm.members = ThingRoles.query({thing_id:itemId, role_name:'member'});
-      vm.organizers = ThingRoles.query({thing_id:itemId, role_name:'organizer'});
       vm.users = User.query();
 
       vm.item = Thing.get({id:itemId});
       vm.thingsAuthz.newItem(vm.item);
+
+      if (vm.authz.canGetMembers) {
+        vm.members = ThingRoles.query({thing_id:itemId, role_name:'member'});
+      }
+      if (vm.authz.canGetOrganizers) {
+        vm.organizers = ThingRoles.query({thing_id:itemId, role_name:'organizer'});
+      }
+
       vm.images.$promise.then(
         function(){
           angular.forEach(vm.images, function(ti){

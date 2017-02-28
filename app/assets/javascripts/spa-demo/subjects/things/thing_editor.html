@@ -132,6 +132,7 @@
           <div class="col-xs-6">
             <button name="originator-remove"
                     type="submit"
+                    ng-show="$ctrl.authz.canSetOriginator"
                     ng-click="$ctrl.removeOriginator(r)">Remove Originator</button>
           </div>
         </div>
@@ -139,7 +140,8 @@
     </ul>
   </div>
 
-  <div class="thing-organizers row">
+  <div class="thing-organizers row"
+       ng-show="$ctrl.authz.canGetOrganizers">
     <div class="col-xs-3">
       <label>Organizers</label>
     </div>
@@ -161,7 +163,8 @@
     </ul>
   </div>
 
-  <div class="thing-members row">
+  <div class="thing-members row"
+       ng-show="$ctrl.authz.canGetMembers">
     <div class="col-xs-3">
       <label>Members</label>
     </div>

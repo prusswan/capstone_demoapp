@@ -141,7 +141,7 @@
   </div>
 
   <div class="thing-organizers row"
-       ng-show="$ctrl.authz.canGetOrganizers">
+       ng-show="$ctrl.authz.canGetOrganizers($ctrl.item)">
     <div class="col-xs-3">
       <label>Organizers</label>
     </div>
@@ -156,6 +156,7 @@
           <div class="col-xs-6">
             <button name="organizer-remove"
                     type="submit"
+                    ng-show="$ctrl.authz.canModifyOrganizer"
                     ng-click="$ctrl.removeOrganizer(r)">Remove Organizer</button>
           </div>
         </div>
@@ -164,7 +165,7 @@
   </div>
 
   <div class="thing-members row"
-       ng-show="$ctrl.authz.canGetMembers">
+       ng-show="$ctrl.authz.canGetMembers($ctrl.item)">
     <div class="col-xs-3">
       <label>Members</label>
     </div>
@@ -179,6 +180,7 @@
           <div class="col-xs-6">
             <button name="member-remove"
                     type="submit"
+                    ng-show="$ctrl.authz.canModifyMember"
                     ng-click="$ctrl.removeMember(r)">Remove Member</button>
           </div>
         </div>

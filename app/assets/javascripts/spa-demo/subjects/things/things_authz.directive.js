@@ -28,6 +28,8 @@
     var vm = this;
     vm.authz={};
     vm.authz.canUpdateItem = canUpdateItem;
+    vm.authz.canGetMembers = canGetMembers;
+    vm.authz.canGetOrganizers = canGetOrganizers;
     vm.newItem=newItem;
 
     activate();
@@ -67,16 +69,23 @@
       vm.authz.canGetDetails = ThingsAuthz.canGetDetails(item);
       vm.authz.canUpdateImage = ThingsAuthz.canUpdateImage(item);
       vm.authz.canRemoveImage = ThingsAuthz.canRemoveImage(item);
-      vm.authz.canGetMembers = ThingsAuthz.canGetMembers(item);
-      vm.authz.canGetOrganizers = ThingsAuthz.canGetOrganizers(item);
+      // vm.authz.canGetMembers = ThingsAuthz.canGetMembers(item);
+      // vm.authz.canGetOrganizers = ThingsAuthz.canGetOrganizers(item);
       vm.authz.canModifyMember = ThingsAuthz.canModifyMember(item);
       vm.authz.canModifyOrganizer = ThingsAuthz.canModifyOrganizer(item);
       vm.authz.canSetOriginator = ThingsAuthz.canSetOriginator();
-      console.log("checkAccess", item, vm.authz);
+      console.log("checkAccess for thing", item, vm.authz);
     }
 
     function canUpdateItem(item) {
       return ThingsAuthz.canUpdate(item);
     }
+    function canGetMembers(item) {
+      return ThingsAuthz.canGetMembers(item);
+    }
+    function canGetOrganizers(item) {
+      return ThingsAuthz.canGetOrganizers(item);
+    }
+
   }
 })();

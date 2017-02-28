@@ -55,6 +55,9 @@
     vm.addOriginator = addOriginator;
     vm.removeOriginator = removeOriginator;
 
+    vm.originators = ThingRoles.query({role_name:'originator'});
+    vm.users = User.query();
+
     vm.$onInit = function() {
       console.log("ThingEditorController",$scope);
       $scope.$watch(function(){ return Authz.getAuthorizedUserId(); },
@@ -79,18 +82,14 @@
       var itemId = thingId ? thingId : vm.item.id;
       console.log("re/loading thing", itemId);
       vm.images = ThingImage.query({thing_id:itemId});
-      vm.originators = ThingRoles.query({thing_id:itemId, role_name:'originator'});
-      vm.users = User.query();
+
+      vm.members = [];
+      vm.organizers = [];
 
       vm.item = Thing.get({id:itemId});
       vm.thingsAuthz.newItem(vm.item);
 
-      if (vm.authz.canGetMembers) {
-        vm.members = ThingRoles.query({thing_id:itemId, role_name:'member'});
-      }
-      if (vm.authz.canGetOrganizers) {
-        vm.organizers = ThingRoles.query({thing_id:itemId, role_name:'organizer'});
-      }
+      vm.item.$promise.then(function(){ getRoleLists(); });
 
       vm.images.$promise.then(
         function(){
@@ -100,6 +99,17 @@
         });
       $q.all([vm.item.$promise,vm.images.$promise]).catch(handleError);
     }
+
+    function getRoleLists() {
+      if (vm.authz.canGetMembers(vm.item)) {
+        vm.members = ThingRoles.query({thing_id: vm.item.id, role_name:'member'});
+      }
+
+      if (vm.authz.canGetOrganizers(vm.item)) {
+        vm.organizers = ThingRoles.query({thing_id: vm.item.id, role_name:'organizer'});
+      }
+    }
+
     function haveDirtyLinks() {
       for (var i=0; vm.images && i<vm.images.length; i++) {
         var ti=vm.images[i];

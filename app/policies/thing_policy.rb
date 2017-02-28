@@ -5,6 +5,7 @@ class ThingPolicy < ApplicationPolicy
 
   def show?
     true
+    # member_or_organizer?
   end
 
   def create?
@@ -60,7 +61,7 @@ class ThingPolicy < ApplicationPolicy
   end
 
   def modify_organizer?
-    organizer?
+    organizer_or_admin?
   end
 
   class Scope < Scope

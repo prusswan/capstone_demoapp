@@ -50,6 +50,8 @@
     vm.updateImageLinks = updateImageLinks;
     vm.addMember = addMember;
     vm.addOrganizer = addOrganizer;
+    vm.removeMember = removeMember;
+    vm.removeOrganizer = removeOrganizer;
 
     vm.$onInit = function() {
       console.log("ThingEditorController",$scope);
@@ -167,6 +169,24 @@
         function(response){
           // console.log(response);
           vm.organizers.push(response);
+        },
+        handleError);
+    }
+
+    function removeMember(user) {
+      console.log("remove member", user);
+      ThingRoles.remove({thing_id: vm.item.id, user_id: user.user_id, role_name: 'member'}).$promise.then(
+        function(response){
+          vm.members.splice(vm.members.indexOf(user), 1);
+        },
+        handleError);
+    }
+
+    function removeOrganizer(user) {
+      console.log("remove organizer", user);
+      ThingRoles.remove({thing_id: vm.item.id, user_id: user.user_id, role_name: 'organizer'}).$promise.then(
+        function(response){
+          vm.organizers.splice(vm.organizers.indexOf(user), 1);
         },
         handleError);
     }

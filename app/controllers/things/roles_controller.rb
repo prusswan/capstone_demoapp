@@ -67,6 +67,17 @@ class Things::RolesController < ApplicationController
   # end
 
   def destroy
+    user = User.find(params[:user_id])
+
+    case params[:role_name]
+    when Role::MEMBER
+      authorize @thing, :modify_member?
+      @role = user.add_role(Role::MEMBER, @thing)
+    when Role::ORGANIZER
+      authorize @thing, :modify_organizer?
+      @role = user.add_role(Role::ORGANIZER, @thing)
+    end
+
     @role.destroy
 
     head :no_content

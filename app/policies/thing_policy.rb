@@ -47,6 +47,10 @@ class ThingPolicy < ApplicationPolicy
     organizer?
   end
 
+  def get_originators?
+    true
+  end
+
   def set_originator?
     admin?
   end

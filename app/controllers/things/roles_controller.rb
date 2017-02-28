@@ -1,6 +1,6 @@
 class Things::RolesController < ApplicationController
   before_action :set_thing
-  before_action :set_role, only: [:show, :destroy]
+  # before_action :set_role, only: [:show, :destroy]
 
   before_action :authenticate_user! #, only: [:index, :create, :update, :destroy, ]
   after_action :verify_authorized
@@ -11,6 +11,9 @@ class Things::RolesController < ApplicationController
       return members
     when Role::ORGANIZER
       return organizers
+    when Role::ORIGINATOR
+      authorize @thing, :get_originators?
+      @roles = Role.where(role_name: Role::ORIGINATOR, mname: Thing)
     else
       authorize @thing, :index?
       @roles = @thing.roles
@@ -44,6 +47,9 @@ class Things::RolesController < ApplicationController
     when Role::ORGANIZER
       authorize @thing, :modify_organizer?
       @role = user.add_role(Role::ORGANIZER, @thing)
+    when Role::ORIGINATOR
+      authorize @thing, :set_originator?
+      @role = user.add_role(Role::ORIGINATOR, Thing)
     end
 
     # @role = Role.new(role_params)
@@ -76,6 +82,9 @@ class Things::RolesController < ApplicationController
     when Role::ORGANIZER
       authorize @thing, :modify_organizer?
       @role = user.add_role(Role::ORGANIZER, @thing)
+    when Role::ORIGINATOR
+      authorize @thing, :set_originator?
+      @role = user.add_role(Role::ORIGINATOR, Thing)
     end
 
     @role.destroy
@@ -88,9 +97,9 @@ class Things::RolesController < ApplicationController
       @thing = Thing.find(params[:thing_id])
     end
 
-    def set_role
-      @role = Role.find(params[:user_id])
-    end
+    # def set_role
+    #   @role = Role.find(params[:user_id])
+    # end
 
     def role_params
       params.require(:role).permit(:role_name, :user_id)

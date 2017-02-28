@@ -52,6 +52,8 @@
     vm.addOrganizer = addOrganizer;
     vm.removeMember = removeMember;
     vm.removeOrganizer = removeOrganizer;
+    vm.addOriginator = addOriginator;
+    vm.removeOriginator = removeOriginator;
 
     vm.$onInit = function() {
       console.log("ThingEditorController",$scope);
@@ -77,6 +79,7 @@
       var itemId = thingId ? thingId : vm.item.id;
       console.log("re/loading thing", itemId);
       vm.images = ThingImage.query({thing_id:itemId});
+      vm.originators = ThingRoles.query({thing_id:itemId, role_name:'originator'});
       vm.members = ThingRoles.query({thing_id:itemId, role_name:'member'});
       vm.organizers = ThingRoles.query({thing_id:itemId, role_name:'organizer'});
       vm.users = User.query();
@@ -172,6 +175,15 @@
         },
         handleError);
     }
+    function addOriginator() {
+      console.log("add originator", vm.selectUserId);
+      ThingRoles.save({thing_id: vm.item.id, user_id: vm.selectUserId, role_name: 'originator'}).$promise.then(
+        function(response){
+          // console.log(response);
+          vm.originators.push(response);
+        },
+        handleError);
+    }
 
     function removeMember(user) {
       console.log("remove member", user);
@@ -181,12 +193,19 @@
         },
         handleError);
     }
-
     function removeOrganizer(user) {
       console.log("remove organizer", user);
       ThingRoles.remove({thing_id: vm.item.id, user_id: user.user_id, role_name: 'organizer'}).$promise.then(
         function(response){
           vm.organizers.splice(vm.organizers.indexOf(user), 1);
+        },
+        handleError);
+    }
+    function removeOriginator(user) {
+      console.log("remove originator", user);
+      ThingRoles.remove({thing_id: vm.item.id, user_id: user.user_id, role_name: 'originator'}).$promise.then(
+        function(response){
+          vm.originators.splice(vm.originators.indexOf(user), 1);
         },
         handleError);
     }

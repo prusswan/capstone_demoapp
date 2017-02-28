@@ -75,8 +75,8 @@
       var itemId = thingId ? thingId : vm.item.id;
       console.log("re/loading thing", itemId);
       vm.images = ThingImage.query({thing_id:itemId});
-      vm.members = ThingRoles.query({thing_id:itemId, role_name:'members'});
-      vm.organizers = ThingRoles.query({thing_id:itemId, role_name:'organizers'});
+      vm.members = ThingRoles.query({thing_id:itemId, role_name:'member'});
+      vm.organizers = ThingRoles.query({thing_id:itemId, role_name:'organizer'});
       vm.users = User.query();
 
       vm.item = Thing.get({id:itemId});
@@ -153,9 +153,22 @@
 
     function addMember() {
       console.log("add member", vm.selectUserId);
+      ThingRoles.save({thing_id: vm.item.id, user_id: vm.selectUserId, role_name: 'member'}).$promise.then(
+        function(response){
+          // reload(vm.item.id);
+          // vm.members = ThingRoles.query({thing_id:vm.item.id, role_name:'member'});
+          vm.members.push(response);
+        },
+        handleError);
     }
     function addOrganizer() {
       console.log("add organizer", vm.selectUserId);
+      ThingRoles.save({thing_id: vm.item.id, user_id: vm.selectUserId, role_name: 'organizer'}).$promise.then(
+        function(response){
+          // console.log(response);
+          vm.organizers.push(response);
+        },
+        handleError);
     }
 
     function handleError(response) {

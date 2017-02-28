@@ -168,18 +168,20 @@
 
     <div class="form-horizontal form-group">
       <div class="col-xs-3">
-        <select class="form-control" ng-model="$ctrl.selectUserId" ng-options="u.id as u.email for u in $ctrl.users track by u.id"></select>
+        <select class="form-control" ng-model="$ctrl.selectUserId" ng-options="u.id as (u.id + ' - ' + u.email) for u in $ctrl.users | orderBy: 'id' track by u.id"></select>
       </div>
       <div class="col-xs-2">
-        <label class="control-label">id: {{ $ctrl.selectUserId }}</label>
+        <label class="control-label">user id: {{ $ctrl.selectUserId }}</label>
       </div>
 
       <div class="col-xs-4">
         <button name="member-add"
                 type="submit"
+                ng-disabled="!$ctrl.selectUserId || ($ctrl.members | filter:{'user_id': $ctrl.selectUserId}:true).length > 0"
                 ng-click="$ctrl.addMember()">Add Member</button>
         <button name="organizer-add"
                 type="submit"
+                ng-disabled="!$ctrl.selectUserId || ($ctrl.organizers | filter:{'user_id': $ctrl.selectUserId}:true).length > 0"
                 ng-click="$ctrl.addOrganizer()">Add Organizer</button>
       </div>
     </div>

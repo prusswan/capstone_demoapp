@@ -51,11 +51,11 @@ class ThingPolicy < ApplicationPolicy
     admin?
   end
 
-  def update_member?
+  def modify_member?
     organizer?
   end
 
-  def update_organizer?
+  def modify_organizer?
     organizer?
   end
 

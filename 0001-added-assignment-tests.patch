@@ -1,0 +1,62 @@
+From 3996a3cfdc2b208474488e87887f400831aac4ac Mon Sep 17 00:00:00 2001
+From: prusswan <prusswan@gmail.com>
+Date: Tue, 17 Jan 2017 20:04:10 +0800
+Subject: [PATCH 1/2] added assignment tests
+
+---
+ spec/factories/foobars.rb                      |  1 +
+ spec/features/manage_foos_spec.rb              |  4 ++++
+ spec/requests/foo_api_error_reportings_spec.rb | 14 ++++++++++++++
+ 3 files changed, 19 insertions(+)
+ create mode 100644 spec/requests/foo_api_error_reportings_spec.rb
+
+diff --git a/spec/factories/foobars.rb b/spec/factories/foobars.rb
+index 51a9cf4..c23f324 100644
+--- a/spec/factories/foobars.rb
++++ b/spec/factories/foobars.rb
+@@ -34,6 +34,7 @@ FactoryGirl.define do
+   end
+
+   factory :foo, :parent=>:foo_faker do
++    sequence(:name) {|n| "name#{n%10}"}
+   end
+
+   factory :bar do
+diff --git a/spec/features/manage_foos_spec.rb b/spec/features/manage_foos_spec.rb
+index 397eccb..0c60aa7 100644
+--- a/spec/features/manage_foos_spec.rb
++++ b/spec/features/manage_foos_spec.rb
+@@ -47,6 +47,10 @@ RSpec.feature "ManageFoos", type: :feature, :js=>true do
+       expect(page).to have_button("Create Foo")
+     end
+
++    scenario "Create button disabled when no name" do
++      expect(page).to have_button("Create Foo", disabled: true)
++    end
++
+     scenario "complete form" do
+       within(:xpath,FOO_FORM_XPATH) do
+         fill_in("name", :with=>foo_state[:name])
+diff --git a/spec/requests/foo_api_error_reportings_spec.rb b/spec/requests/foo_api_error_reportings_spec.rb
+new file mode 100644
+index 0000000..f522874
+--- /dev/null
++++ b/spec/requests/foo_api_error_reportings_spec.rb
+@@ -0,0 +1,14 @@
++require 'rails_helper'
++
++RSpec.describe "FooApiErrorReportings", type: :request do
++  describe "POST /api/foos" do
++    it "invalid Foo reports API error" do
++      post foos_path, {foo: {id: 1} },
++                     {"Accept"=>"application/json"}
++      expect([404,422]).to include(response.code.to_i)
++
++      payload = parsed_body
++      expect(payload).to have_key("errors")
++    end
++  end
++end
+--
+2.7.4
+

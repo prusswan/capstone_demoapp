@@ -1,0 +1,91 @@
+From 5c5467928e2839027645a32cc5efe3a52e1ecc3e Mon Sep 17 00:00:00 2001
+From: prusswan <prusswan@gmail.com>
+Date: Tue, 17 Jan 2017 20:05:50 +0800
+Subject: [PATCH 2/2] added application solutions
+
+---
+ app/assets/javascripts/spa-demo/foos/foos.html | 13 +++++++------
+ app/controllers/foos_controller.rb             |  2 +-
+ app/models/foo.rb                              |  1 +
+ spec/features/manage_foos_spec.rb              |  2 +-
+ 4 files changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/app/assets/javascripts/spa-demo/foos/foos.html b/app/assets/javascripts/spa-demo/foos/foos.html
+index 98dbb6a..204305f 100644
+--- a/app/assets/javascripts/spa-demo/foos/foos.html
++++ b/app/assets/javascripts/spa-demo/foos/foos.html
+@@ -2,7 +2,7 @@
+   <h3>Foos</h3>
+   <span>(from spa-demo/foos/foos.html)</span>
+ 
+-  <form>
++  <form name="fooForm">
+     <div>
+       <label>Name:</label>
+       <input name="name"
+@@ -10,16 +10,17 @@
+               required="required"/>
+     </div>
+ 
+-    <button ng-if="!foosVM.foo.id" 
++    <button ng-if="!foosVM.foo.id"
+              type="submit"
+-             ng-click="foosVM.create()">Create Foo</button>  
++             ng-disabled="fooForm.$invalid"
++             ng-click="foosVM.create()">Create Foo</button>
+     <div ng-if="foosVM.foo.id">
+       <button type="submit"
+               ng-click="foosVM.update()">Update Foo</button>
+       <button type="submit"
+               ng-click="foosVM.remove()">Delete Foo</button>
+-    </div>               
+-    </form>
++    </div>
++  </form>
+ 
+   <ul>
+     <li ng-repeat="foo in foosVM.foos | orderBy:'name'">
+@@ -27,4 +28,4 @@
+     </li>
+   </ul>
+ 
+-</div>
+\ No newline at end of file
++</div>
+diff --git a/app/controllers/foos_controller.rb b/app/controllers/foos_controller.rb
+index 9a70083..eaf3154 100644
+--- a/app/controllers/foos_controller.rb
++++ b/app/controllers/foos_controller.rb
+@@ -19,7 +19,7 @@ class FoosController < ApplicationController
+       #render json: @foo, status: :created, location: @foo
+       render :show, status: :created, location: @foo
+     else
+-      render json: @foo.errors, status: :unprocessable_entity
++      render json: {errors: @foo.errors}, status: :unprocessable_entity
+     end
+   end
+ 
+diff --git a/app/models/foo.rb b/app/models/foo.rb
+index cc3645e..a9e4139 100644
+--- a/app/models/foo.rb
++++ b/app/models/foo.rb
+@@ -1,2 +1,3 @@
+ class Foo < ActiveRecord::Base
++  validates_presence_of :name
+ end
+diff --git a/spec/features/manage_foos_spec.rb b/spec/features/manage_foos_spec.rb
+index 0c60aa7..0e789bc 100644
+--- a/spec/features/manage_foos_spec.rb
++++ b/spec/features/manage_foos_spec.rb
+@@ -44,7 +44,7 @@ RSpec.feature "ManageFoos", type: :feature, :js=>true do
+       expect(page).to have_css("label", :text=>"Name:")
+       expect(page).to have_css("input[name='name'][ng-model*='foo.name']")
+       expect(page).to have_css("button[ng-click*='create()']", :text=>"Create Foo")
+-      expect(page).to have_button("Create Foo")
++      expect(page).to have_button("Create Foo", disabled: true)
+     end
+ 
+     scenario "Create button disabled when no name" do
+-- 
+2.7.4
+

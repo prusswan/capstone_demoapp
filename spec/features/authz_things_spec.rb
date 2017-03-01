@@ -10,6 +10,7 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
   let(:organizer)     { originator }
   let(:member)        { create_user }
   let(:authenticated) { create_user }
+  let!(:normal_user)   { create_user }
   let(:thing_props)   { FactoryGirl.attributes_for(:thing) }
   let(:things)        { FactoryGirl.create_list(:thing, 3,
                                                 :with_roles,
@@ -209,6 +210,14 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
     end
   end
 
+  shared_examples "can see members of thing" do
+    it "sees list of members" do
+      within("sd-thing-editor .thing-form") do
+        expect(page).to have_css(".thing-members")
+      end
+    end
+  end
+
   context "no thing selected" do
     after(:each) { logout }
 
@@ -291,7 +300,7 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
         it_behaves_like "can clear thing"
         it_behaves_like "cannot update thing"
 
-        pending "can see members of thing"
+        it_behaves_like "can see members of thing"
       end
 
       context "organizer user" do
@@ -306,8 +315,25 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
         it_behaves_like "cannot update to invalid thing"
         it_behaves_like "can delete thing"
 
-        pending "can modify member assignments for thing"
-        pending "can modify organizer assignments for thing"
+        it_behaves_like "can see members of thing"
+
+        context "role assignment" do
+          it "can modify member assignments for thing" do
+            within('.thing-members') do
+              expect(page).to have_selector('li.list-group-item', count: 1)
+              click_button("Remove Member")
+              expect(page).to have_selector('li.list-group-item', count: 0)
+            end
+          end
+
+          it "can modify organizer assignments for thing" do
+            within('.thing-organizers') do
+              expect(page).to have_selector('li.list-group-item', count: 1)
+              click_button("Remove Organizer")
+              expect(page).to have_selector('li.list-group-item', count: 0)
+            end
+          end
+        end
       end
 
       context "admin user" do
@@ -321,7 +347,19 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
         it_behaves_like "cannot update thing"
         it_behaves_like "can delete thing"
 
-        pending "can assign originator role to thing"
+        it "can assign originator role to thing" do
+          expect(page).not_to have_selector('.thing-originators li.list-group-item', count: 2)
+          select normal_user[:email]
+          click_button("Set Originator")
+          expect(page).to have_selector('.thing-originators li.list-group-item', count: 2)
+
+          # using_wait_time 10 do
+          #   expect do
+          #     select normal_user[:email]
+          #     click_button("Set Originator")
+          #   end.to change { have_selector('.thing-originators li.list-group-item', count: 1).length > 0 }.from(true).to(false)
+          # end
+        end
       end
     end
 

@@ -56,7 +56,7 @@
     vm.removeOriginator = removeOriginator;
 
     vm.originators = [];
-    vm.users = User.query();
+    vm.users = [];
 
     vm.$onInit = function() {
       console.log("ThingEditorController",$scope);
@@ -64,6 +64,7 @@
                     function(){
                       if (Authz.isAuthenticated()) {
                         vm.originators = ThingRoles.query({role_name:'originator'});
+                        vm.users = User.query();
                       }
 
                       if ($stateParams.id) {

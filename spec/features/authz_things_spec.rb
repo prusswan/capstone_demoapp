@@ -10,7 +10,7 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
   let(:organizer)     { originator }
   let(:member)        { create_user }
   let(:authenticated) { create_user }
-  let!(:normal_user)   { create_user }
+  let!(:normal_user)  { create_user }
   let(:thing_props)   { FactoryGirl.attributes_for(:thing) }
   let(:things)        { FactoryGirl.create_list(:thing, 3,
                                                 :with_roles,
@@ -92,6 +92,16 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
         expect(page).to have_field("thing-name", :with=>thing.name)
         expect(page).to have_no_css(".thing_id") #should be hidden
       end
+    end
+
+    it "cannot navigate to non-existent thing" do
+      invalid_thing_path = "#{ui_path}/#/things/12345678"
+
+      visit invalid_thing_path
+      expect(page).to have_content("cannot find id[12345678]")
+
+      invalid_thing_url = "#{page.current_host}:#{page.server.port}/#{invalid_thing_path}"
+      expect(page).not_to have_current_path(invalid_thing_url, url: true)
     end
   end
 

@@ -40,7 +40,10 @@
     })
     .state("things",{
       url: "/things/:id",
-      templateUrl: APP_CONFIG.things_page_html
+      templateUrl: APP_CONFIG.things_page_html,
+      params: {
+        errors: null
+      }
     })
     ;
 

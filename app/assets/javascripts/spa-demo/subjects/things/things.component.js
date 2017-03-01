@@ -59,7 +59,7 @@
     vm.users = [];
 
     vm.$onInit = function() {
-      console.log("ThingEditorController",$scope);
+      console.log("ThingEditorController",$scope, $stateParams);
       $scope.$watch(function(){ return Authz.getAuthorizedUserId(); },
                     function(){
                       if (Authz.isAuthenticated()) {
@@ -79,6 +79,7 @@
     //////////////
     function newResource() {
       vm.item = new Thing();
+      if($stateParams.errors) vm.item.errors = $stateParams.errors;
       vm.thingsAuthz.newItem(vm.item);
       return vm.item;
     }
@@ -86,23 +87,33 @@
     function reload(thingId) {
       var itemId = thingId ? thingId : vm.item.id;
       console.log("re/loading thing", itemId);
-      vm.images = ThingImage.query({thing_id:itemId});
-
+      vm.images = []; // ThingImage.query({thing_id:itemId});
       vm.members = [];
       vm.organizers = [];
 
       vm.item = Thing.get({id:itemId});
       vm.thingsAuthz.newItem(vm.item);
 
-      vm.item.$promise.then(function(){ getRoleLists(); });
-
-      vm.images.$promise.then(
+      vm.item.$promise.then(
         function(){
-          angular.forEach(vm.images, function(ti){
-            ti.originalPriority = ti.priority;
-          });
-        });
-      $q.all([vm.item.$promise,vm.images.$promise]).catch(handleError);
+          vm.images = ThingImage.query({thing_id:itemId});
+          vm.images.$promise.then(
+            function(){
+              angular.forEach(vm.images, function(ti){
+                ti.originalPriority = ti.priority;
+              });
+            });
+
+          getRoleLists();
+        },
+        function(response){
+          console.log("no such thing!!");
+          handleError(response);
+          $state.go(".",{id: null, errors: vm.item.errors});
+        }
+      );
+
+      $q.all([vm.images.$promise]).catch(handleError);
     }
 
     function getRoleLists() {

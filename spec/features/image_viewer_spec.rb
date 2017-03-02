@@ -12,7 +12,7 @@ RSpec.feature "ImageViewer", type: :feature, js:true do
   let(:image) { thing.thing_images.primary.image }
   before(:each) do
     unless Thing.exists?
-      t=FactoryGirl.create(:thing,:with_roles, :with_image, 
+      t=FactoryGirl.create(:thing,:with_roles, :with_image,
                          originator_id:originator[:id],
                          image_count:3)
       t.thing_images.each_with_index {|ti,idx| ti.priority=idx; ti.save}
@@ -73,7 +73,7 @@ RSpec.feature "ImageViewer", type: :feature, js:true do
           expect(page).to have_css("span.caption", text:images[0].image.caption)
         end
 
-        [1,2,0].each do |idx| 
+        [1,2,0].each do |idx|
           #go right
           find("span.glyphicon-chevron-right", visible:false).click
           within(".image-items") do
@@ -94,9 +94,9 @@ RSpec.feature "ImageViewer", type: :feature, js:true do
           expect(page).to have_css("span.caption", text:images[0].image.caption)
         end
 
-        [2,1,0].each do |idx| 
+        [2,1,0].each do |idx|
           #go right
-          find("span.glyphicon-chevron-left", visible:false).click
+          find("span.glyphicon-chevron-left", visible:false).trigger('click') #.click
           within(".image-items") do
             #verify we advanced to the correct Image
             find("span.caption", visible:false).click

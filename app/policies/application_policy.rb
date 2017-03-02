@@ -20,6 +20,9 @@ class ApplicationPolicy
   def originator?
     @user.has_role([Role::ORIGINATOR], @record.name)
   end
+  def admin?
+    @user.has_role([Role::ADMIN])
+  end
 
   def index?
     false
@@ -73,11 +76,11 @@ class ApplicationPolicy
 
   def self.merge(scope)
     prev=nil
-    scope.select { |r| 
+    scope.select { |r|
       if prev && prev.id == r.id
         prev.user_roles << r.role_name if r.role_name
         false #toss this
-      else 
+      else
         r.user_roles << r.role_name if r.role_name
         prev = r
       end

@@ -1,7 +1,7 @@
 require 'rails_helper'
 require_relative '../support/subjects_ui_helper.rb'
 
-RSpec.feature "AuthzThings", type: :feature, js:true do
+RSpec.feature "AuthzRoles", type: :feature, js:true do
   include_context "db_cleanup_each"
   include SubjectsUiHelper
 
@@ -10,28 +10,32 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
   let(:organizer)     { originator }
   let(:member)        { create_user }
   let(:authenticated) { create_user }
-  let!(:normal_user)   { create_user }
   let(:thing_props)   { FactoryGirl.attributes_for(:thing) }
   let(:things)        { FactoryGirl.create_list(:thing, 3,
                                                 :with_roles,
                                                 :originator_id=>originator[:id],
                                                 :member_id=>member[:id]) }
+  let(:roles)         { FactoryGirl.create_list(:role, 5) }
   let(:thing)         { things[0] }
 
-  shared_examples "cannot list things" do
-    it "does not list things" do
-      visit_things things
-      expect(page).to have_css(".thing-list",:visible=>false)
+  before(:each) do
+    admin
+  end
+
+  shared_examples "cannot list roles" do
+    it "does not list roles" do
+      visit_roles roles
+      expect(page).to have_css(".role-list",:visible=>false)
     end
   end
-  shared_examples "can list things" do
-    it "lists things" do
-      visit_things things
-      within("sd-thing-selector .thing-list") do
-        things.each do |t|
+  shared_examples "can list roles" do
+    it "lists roles" do
+      visit_roles roles
+      within("sd-role-selector .role-list") do
+        roles.each do |t|
           expect(page).to have_css("li a",:text=>t.name)
-          expect(page).to have_css(".thing_id",:text=>t.id,:visible=>false)
-          expect(page).to have_no_css(".thing_id") #should be hidden
+          expect(page).to have_css(".role_id",:text=>t.id,:visible=>false)
+          expect(page).to have_no_css(".role_id") #should be hidden
         end
       end
     end
@@ -39,7 +43,7 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
 
   shared_examples "displays correct buttons for role" do |displayed,not_displayed|
     it "displays correct buttons" do
-      within("sd-thing-editor .thing-form") do
+      within("sd-role-editor .role-form") do
         displayed.each do |button|
           #create is present and disabled until name filled in
           disabled_value = ["Create Thing","Update Thing"].include? button
@@ -210,183 +214,139 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
     end
   end
 
-  shared_examples "can see members of thing" do
-    it "sees list of members" do
-      within("sd-thing-editor .thing-form") do
-        expect(page).to have_css(".thing-members")
-      end
-    end
-  end
-
-  context "no thing selected" do
+  context "no role selected" do
     after(:each) { logout }
 
     context "unauthenticated user" do
-      before(:each) { visit_things things }
-      it_behaves_like "cannot list things"
+      before(:each) { visit_roles roles }
+      it_behaves_like "cannot list roles"
       it_behaves_like "displays correct buttons for role",
           [],
-          ["Create Thing", "Clear Thing", "Update Thing", "Delete Thing"]
+          ["Create Role", "Clear Role", "Update Role", "Delete Role"]
     end
     context "authenticated user" do
-      before(:each) { login authenticated; visit_things things}
-      it_behaves_like "cannot list things"
+      before(:each) { login authenticated; visit_roles roles}
+      it_behaves_like "cannot list roles"
       it_behaves_like "displays correct buttons for role",
           [],
-          ["Create Thing"], ["Clear Thing", "Update Thing", "Delete Thing"]
+          ["Create Role"], ["Clear Role", "Update Role", "Delete Role"]
     end
-    context "originator user" do
-      before(:each) { login originator; visit_things things }
-      it_behaves_like "displays correct buttons for role",
-          ["Create Thing"],
-          ["Clear Thing", "Update Thing", "Delete Thing"]
-      it_behaves_like "can list things"
-      it_behaves_like "organizer has invalid thing"
-      it_behaves_like "can create valid thing"
-    end
-    context "admin user" do
-      before(:each) { login admin; visit_things things }
-      it_behaves_like "displays correct buttons for role",
-          [],
-          ["Create Thing", "Clear Thing", "Update Thing", "Delete Thing"]
-      it_behaves_like "can list things"
-    end
+    # context "originator user" do
+    #   before(:each) { login originator; visit_things things }
+    #   it_behaves_like "displays correct buttons for role",
+    #       ["Create Thing"],
+    #       ["Clear Thing", "Update Thing", "Delete Thing"]
+    #   it_behaves_like "can list things"
+    #   it_behaves_like "organizer has invalid thing"
+    #   it_behaves_like "can create valid thing"
+    # end
+    # context "admin user" do
+    #   before(:each) { login admin; visit_things things }
+    #   it_behaves_like "displays correct buttons for role",
+    #       [],
+    #       ["Create Thing", "Clear Thing", "Update Thing", "Delete Thing"]
+    #   it_behaves_like "can list things"
+    # end
   end
 
-  context "things posted" do
-    before(:each) do
-      things #touch things to have them created before visiting page
-      visit "#{ui_path}/#/things/"
-      logout
-      expect(page).to have_css("sd-thing-selector")
-    end
-    after(:each) { logout }
+  # context "things posted" do
+  #   before(:each) do
+  #     things #touch things to have them created before visiting page
+  #     visit "#{ui_path}/#/things/"
+  #     logout
+  #     expect(page).to have_css("sd-thing-selector")
+  #   end
+  #   after(:each) { logout }
 
-    def select_thing
-      within("sd-thing-selector .thing-list") do
-        find("span.thing_id",:text=>thing.id, :visible=>false).find(:xpath,"..").click
-      end
-      within("sd-thing-editor .thing-form") do
-        expect(page).to have_css("span.thing_id",:text=>thing.id, :visible=>false)
-      end
-    end
+  #   def select_thing
+  #     within("sd-thing-selector .thing-list") do
+  #       find("span.thing_id",:text=>thing.id, :visible=>false).find(:xpath,"..").click
+  #     end
+  #     within("sd-thing-editor .thing-form") do
+  #       expect(page).to have_css("span.thing_id",:text=>thing.id, :visible=>false)
+  #     end
+  #   end
 
-    context "user selects thing" do
-      it_behaves_like "displays thing"
+  #   context "user selects thing" do
+  #     it_behaves_like "displays thing"
 
-      context "anonymous user" do
-        before(:each) { visit "#{ui_path}/#/things/#{thing.id}" }
-        it_behaves_like "displays correct buttons for role",
-            [],
-            ["Clear Thing"], ["Create Thing", "Update Thing", "Delete Thing"]
-        it_behaves_like "cannot see details"
-      end
+  #     context "anonymous user" do
+  #       before(:each) { visit "#{ui_path}/#/things/#{thing.id}" }
+  #       it_behaves_like "displays correct buttons for role",
+  #           [],
+  #           ["Clear Thing"], ["Create Thing", "Update Thing", "Delete Thing"]
+  #       it_behaves_like "cannot see details"
+  #     end
 
-      context "authenticated user" do
-        before(:each) { visit "#{ui_path}/#/things/#{thing.id}" }
-        it_behaves_like "displays correct buttons for role",
-            [],
-            ["Clear Thing", "Create Thing", "Update Thing", "Delete Thing"]
-        it_behaves_like "cannot see details"
-      end
+  #     context "authenticated user" do
+  #       before(:each) { visit "#{ui_path}/#/things/#{thing.id}" }
+  #       it_behaves_like "displays correct buttons for role",
+  #           [],
+  #           ["Clear Thing", "Create Thing", "Update Thing", "Delete Thing"]
+  #       it_behaves_like "cannot see details"
+  #     end
 
-      context "member user" do
-        before(:each) { login member; select_thing }
-        it_behaves_like "displays correct buttons for role",
-            ["Clear Thing"],
-            ["Create Thing", "Update Thing", "Delete Thing"]
-        it_behaves_like "displays thing"
-        it_behaves_like "can see details", true
-        it_behaves_like "can clear thing"
-        it_behaves_like "cannot update thing"
+  #     context "member user" do
+  #       before(:each) { login member; select_thing }
+  #       it_behaves_like "displays correct buttons for role",
+  #           ["Clear Thing"],
+  #           ["Create Thing", "Update Thing", "Delete Thing"]
+  #       it_behaves_like "displays thing"
+  #       it_behaves_like "can see details", true
+  #       it_behaves_like "can clear thing"
+  #       it_behaves_like "cannot update thing"
+  #     end
 
-        it_behaves_like "can see members of thing"
-      end
+  #     context "organizer user" do
+  #       before(:each) { login organizer; select_thing }
+  #       it_behaves_like "displays correct buttons for role",
+  #           ["Clear Thing", "Update Thing", "Delete Thing"],
+  #           ["Create Thing"]
+  #       it_behaves_like "displays thing"
+  #       it_behaves_like "can see details", false
+  #       it_behaves_like "can clear thing"
+  #       it_behaves_like "can update thing"
+  #       it_behaves_like "cannot update to invalid thing"
+  #       it_behaves_like "can delete thing"
+  #     end
 
-      context "organizer user" do
-        before(:each) { login organizer; select_thing }
-        it_behaves_like "displays correct buttons for role",
-            ["Clear Thing", "Update Thing", "Delete Thing"],
-            ["Create Thing"]
-        it_behaves_like "displays thing"
-        it_behaves_like "can see details", false
-        it_behaves_like "can clear thing"
-        it_behaves_like "can update thing"
-        it_behaves_like "cannot update to invalid thing"
-        it_behaves_like "can delete thing"
+  #     context "admin user" do
+  #       before(:each) { login admin; select_thing }
+  #       it_behaves_like "displays correct buttons for role",
+  #           ["Clear Thing", "Delete Thing"],
+  #           ["Create Thing", "Update Thing"]
+  #       it_behaves_like "displays thing"
+  #       it_behaves_like "can see details", true
+  #       it_behaves_like "can clear thing"
+  #       it_behaves_like "cannot update thing"
+  #       it_behaves_like "can delete thing"
+  #     end
+  #   end
 
-        it_behaves_like "can see members of thing"
+  #   context "user logs out" do
+  #     it "displays last selected thing as non-member" do
+  #       login organizer
+  #       select_thing
+  #       within("sd-thing-editor .thing-form") do
+  #         expect(page).to have_field("thing-name", :with=>thing.name)
+  #         expect(page).to have_field("thing-desc", :visible=>true,
+  #                                                  :readonly=>false)
+  #         expect(page).to have_field("thing-notes",:visible=>true,
+  #                                                  :readonly=>false)
+  #         expect(page).to have_css("button");
+  #       end
 
-        context "role assignment" do
-          it "can modify member assignments for thing" do
-            within('.thing-members') do
-              expect(page).to have_selector('li.list-group-item', count: 1)
-              click_button("Remove Member")
-              expect(page).to have_selector('li.list-group-item', count: 0)
-            end
-          end
+  #       logout
+  #       within("sd-thing-editor .thing-form") do
+  #         expect(page).to have_field("thing-name", :with=>thing.name,
+  #                                                  :readonly=>true)
+  #         expect(page).to have_field("thing-desc", :with=>thing.description,
+  #                                                  :readonly=>true)
+  #         expect(page).to have_no_field("thing-notes")
+  #         expect(page).to have_no_css("button");
+  #       end
+  #     end
+  #   end
 
-          it "can modify organizer assignments for thing" do
-            within('.thing-organizers') do
-              expect(page).to have_selector('li.list-group-item', count: 1)
-              click_button("Remove Organizer")
-              expect(page).to have_selector('li.list-group-item', count: 0)
-            end
-          end
-        end
-      end
-
-      context "admin user" do
-        before(:each) { login admin; select_thing }
-        it_behaves_like "displays correct buttons for role",
-            ["Clear Thing", "Delete Thing"],
-            ["Create Thing", "Update Thing"]
-        it_behaves_like "displays thing"
-        it_behaves_like "can see details", true
-        it_behaves_like "can clear thing"
-        it_behaves_like "cannot update thing"
-        it_behaves_like "can delete thing"
-
-        it "can assign originator role to thing" do
-          expect(page).not_to have_selector('.thing-originators li.list-group-item', count: 2)
-          select normal_user[:email]
-          click_button("Set Originator")
-          expect(page).to have_selector('.thing-originators li.list-group-item', count: 2)
-
-          # using_wait_time 10 do
-          #   expect do
-          #     select normal_user[:email]
-          #     click_button("Set Originator")
-          #   end.to change { have_selector('.thing-originators li.list-group-item', count: 1).length > 0 }.from(true).to(false)
-          # end
-        end
-      end
-    end
-
-    context "user logs out" do
-      it "displays last selected thing as non-member" do
-        login organizer
-        select_thing
-        within("sd-thing-editor .thing-form") do
-          expect(page).to have_field("thing-name", :with=>thing.name)
-          expect(page).to have_field("thing-desc", :visible=>true,
-                                                   :readonly=>false)
-          expect(page).to have_field("thing-notes",:visible=>true,
-                                                   :readonly=>false)
-          expect(page).to have_css("button");
-        end
-
-        logout
-        within("sd-thing-editor .thing-form") do
-          expect(page).to have_field("thing-name", :with=>thing.name,
-                                                   :readonly=>true)
-          expect(page).to have_field("thing-desc", :with=>thing.description,
-                                                   :readonly=>true)
-          expect(page).to have_no_field("thing-notes")
-          expect(page).to have_no_css("button");
-        end
-      end
-    end
-
-  end
+  # end
 end

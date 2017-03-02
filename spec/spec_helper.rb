@@ -32,8 +32,8 @@ Capybara.register_driver :selenium do |app|
     puts "Capybara.app_host=#{Capybara.app_host}"
     Capybara.server_host = "0.0.0.0"
     Capybara.server_port = ENV['APP_PORT']
-    Capybara::Selenium::Driver.new( app, 
-        :browser=>:remote, 
+    Capybara::Selenium::Driver.new( app,
+        :browser=>:remote,
         :url=>"http://#{ENV['SELENIUM_REMOTE_HOST']}:4444/wd/hub",
         :desired_capabilities=>:chrome)
   elsif browser == :chrome
@@ -42,7 +42,7 @@ Capybara.register_driver :selenium do |app|
       Selenium::WebDriver::Chrome.driver_path=ENV['CHROMEDRIVER_BINARY_PATH']
     end
     Capybara::Selenium::Driver.new(app, :browser => :chrome)
-  else 
+  else
     if ENV['FIREFOX_BINARY_PATH']
       require 'selenium/webdriver'
       #set FIREFOX_BINARY_PATH=c:\Program Files\Mozilla Firefox\firefox.exe
@@ -53,7 +53,7 @@ Capybara.register_driver :selenium do |app|
 end
 
 require 'capybara/poltergeist'
-# Set the default driver 
+# Set the default driver
 Capybara.configure do |config|
   config.default_driver = :rack_test
   #used when :js=>true
@@ -115,6 +115,9 @@ RSpec.configure do |config|
   # inherited by the metadata hash of host groups and examples, rather than
   # triggering implicit auto-inclusion in groups with matching metadata.
   config.shared_context_metadata_behavior = :apply_to_host_groups
+
+  config.example_status_persistence_file_path = "examples.txt"
+  # config.filter_run_when_matching :focus
 
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.

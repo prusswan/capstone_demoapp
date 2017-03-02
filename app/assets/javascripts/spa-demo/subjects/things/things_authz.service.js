@@ -32,7 +32,25 @@
     ThingsAuthz.prototype.canRemoveImage=function(thing) {
         return Authz.isOrganizer(thing) || Authz.isAdmin();
     };
-    
+    ThingsAuthz.prototype.canGetMembers=function(thing) {
+        return Authz.isMember(thing) || Authz.isOrganizer(thing);
+    }
+    ThingsAuthz.prototype.canGetOrganizers=function(thing) {
+        return Authz.isOrganizer(thing);
+    }
+    ThingsAuthz.prototype.canModifyOrganizer=function(thing) {
+        return Authz.isOrganizer(thing);
+    }
+    ThingsAuthz.prototype.canModifyMember=function(thing) {
+        return Authz.isOrganizer(thing);
+    }
+    ThingsAuthz.prototype.canModifyOrganizer=function(thing) {
+        return Authz.isOrganizer(thing);
+    }
+    ThingsAuthz.prototype.canSetOriginator=function() {
+        return Authz.isAdmin();
+    }
+
     return new ThingsAuthz();
   }
 })();

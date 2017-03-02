@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   mount_devise_token_auth_for 'User', at: 'auth'
 
-  scope :api, defaults: {format: :json}  do 
+  scope :api, defaults: {format: :json}  do
     resources :foos, except: [:new, :edit]
     resources :bars, except: [:new, :edit]
     resources :images, except: [:new, :edit] do
@@ -17,7 +17,18 @@ Rails.application.routes.draw do
       resources :thing_images, only: [:index, :create, :update, :destroy]
     end
     get "images/:id/content", as: :image_content, controller: :images, action: :content, defaults:{format: :jpg}
-  end      
+
+    namespace :things, path: 'things(/:thing_id)' do
+      resources :roles, only: [:index, :create, :destroy], path: 'roles/:role_name', param: :user_id do
+        # collection do
+        #   get :members, :organizers
+        # end
+      end
+    end
+
+    resources :users, only: [:index]
+    resources :roles, only: [:index, :show]
+  end
 
   get "/client-assets/:name.:format", :to => redirect("/client/client-assets/%{name}.%{format}")
 #  get "/", :to => redirect("/client/index.html")

@@ -6,6 +6,11 @@ FactoryGirl.define do
     password { Faker::Internet.password }
   end
 
+  factory :dummy_user, class: User, parent: :user do
+    name 'dummy_name'
+    initialize_with { User.first }
+  end
+
   factory :admin, class: User, parent: :user do
     after(:build) do |user|
       user.roles.build(:role_name=>Role::ADMIN)

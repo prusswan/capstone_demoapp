@@ -1,4 +1,4 @@
-# 
+#
 source 'https://rubygems.org'
 
 gem 'rails', '4.2.6'
@@ -18,6 +18,7 @@ gem 'jbuilder', '~> 2.0', '>=2.6.0'
 
 group :development do
   gem 'spring', '~>2.0', '>=2.0.0'
+  gem 'guard-rspec', require: false
 end
 
 group :development, :test do
@@ -36,6 +37,8 @@ group :development, :test do
   gem 'chromedriver-helper', '~>1.0', '>=1.0.0'
   gem 'launchy', '~>2.4', '>=2.4.3'
   gem 'simplecov', '~>0', '>=0.12', :require=>false
+
+  gem 'dotenv-rails'
 end
 
 group :production do
@@ -60,4 +63,5 @@ source 'http://insecure.rails-assets.org' do
   gem 'rails-assets-ng-file-upload', '~>12.2', '>= 12.2.11'
   gem 'rails-assets-ng-file-upload-shim'
   gem 'rails-assets-ui-cropper', '~>1.0', '>=1.0.4'
+  gem 'rails-assets-angular-datatables', '<= 0.6.0'
 end

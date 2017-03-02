@@ -1,0 +1,18 @@
+language: ruby
+rvm:
+  - 2.2.5
+
+dist: trusty
+addons:
+  postgresql: '9.5'
+
+services:
+  - mongodb
+
+bundler_args: --without development production
+cache: bundler
+
+before_script:
+  - psql -c 'create database capstone_demoapp_test;' -U postgres
+  - bundle exec rake db:schema:load
+  - bundle exec rspec

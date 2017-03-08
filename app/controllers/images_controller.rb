@@ -39,6 +39,10 @@ class ImagesController < ApplicationController
     @image = Image.new(image_params)
     @image.creator_id=current_user.id
 
+    if params[:user_id]
+      @image.user = User.find_by(id: params[:user_id])
+    end
+
     User.transaction do
       if @image.save
         original=ImageContent.new(image_content_params)

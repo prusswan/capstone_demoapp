@@ -22,7 +22,7 @@ class ImagesController < ApplicationController
   def content
     result=ImageContent.image(@image).smallest(params[:width],params[:height]).first
     if result
-      expires_in 1.year, :public=>true
+      expires_in 1.year, :public=>true unless Rails.env.development?
       if stale? result
         options = { type: result.content_type,
                     disposition: "inline",

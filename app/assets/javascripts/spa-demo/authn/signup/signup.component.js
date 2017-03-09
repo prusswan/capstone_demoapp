@@ -18,12 +18,12 @@
   function SignupController($scope, $state, Authn, DataUtils) {
     var vm=this;
     vm.signupForm = {};
-    vm.signupForm = {
-      email: (new Date()).getTime() + '@lazy.com',
-      name: 'some name huh',
-      password: '12345678',
-      password_confirmation: '12345678'
-    };
+    // vm.signupForm = {
+    //   email: (new Date()).getTime() + '@lazy.com',
+    //   name: 'some name huh',
+    //   password: '12345678',
+    //   password_confirmation: '12345678'
+    // };
     vm.signup = signup;
     vm.setImageContent = setImageContent;
 

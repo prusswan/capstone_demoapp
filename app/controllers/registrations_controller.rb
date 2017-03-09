@@ -1,7 +1,5 @@
 class RegistrationsController < DeviseTokenAuth::RegistrationsController
   def create
-    p params.keys
-
     super do |resource|
       create_avatar(resource) if resource.id && params[:avatar_content]
       resource

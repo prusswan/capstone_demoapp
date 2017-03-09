@@ -5,9 +5,9 @@
   <div id="signup-email" class="row col-lg-12">
     <label class="col-xs-3">email</label>
     <input class="col-xs-9"
-           type="email" 
-           name="signup-email" 
-           ng-model="$ctrl.signupForm.email" 
+           type="email"
+           name="signup-email"
+           ng-model="$ctrl.signupForm.email"
            required="required"/>
     <span class="invalid"
           ng-hide="signup_form.$dirty">{{$ctrl.signupForm.errors.email}}</span>
@@ -16,8 +16,8 @@
   <div id="signup-name" class="row col-lg-12">
     <label class="col-xs-3">name</label>
     <input class="col-xs-9"
-           name="signup-name" 
-           ng-model="$ctrl.signupForm.name" 
+           name="signup-name"
+           ng-model="$ctrl.signupForm.name"
            required="required"/>
     <span class="invalid"
           ng-hide="signup_form.$dirty">{{$ctrl.signupForm.errors.name}}</span>
@@ -26,9 +26,10 @@
   <div id="signup-password" class="row col-lg-12">
     <label class="col-xs-3 pull-left">password</label>
     <input class="col-xs-9"
-           type="password" 
-           name="signup-password" 
-           ng-model="$ctrl.signupForm.password" 
+           type="password"
+           name="signup-password"
+           value="12345678"
+           ng-model="$ctrl.signupForm.password"
            required="required"/>
     <span class="invalid"
           ng-hide="signup_form.$dirty">{{$ctrl.signupForm.errors.password}}</span>
@@ -37,13 +38,39 @@
   <div id="signup-password_confirmation" class="row col-lg-12">
     <label class="col-xs-3 pull-left">password confirmation</label>
     <input class="col-xs-9"
-           type="password" 
-           name="signup-password_confirmation" 
-           ng-model="$ctrl.signupForm.password_confirmation" 
+           type="password"
+           name="signup-password_confirmation"
+           ng-model="$ctrl.signupForm.password_confirmation"
            required="required"/>
     <span class="invalid"
           ng-hide="signup_form.$dirty">{{$ctrl.signupForm.errors.password_confirmation}}</span>
   </div>
+
+  <div id="signup-avatar" class="row col-lg-12">
+    <label class="col-xs-3">avatar</label>
+    <div class="col-xs-12 col-sm-9 image-rendering">
+      <div class="image-existing">
+        <img class="img-responsive img-rounded"
+             style="width: 250px"
+             ng-src="{{$ctrl.item.content_url}}?width=250"
+             ng-if="$ctrl.item.content_url" />
+      </div>
+
+      <sd-image-loader
+        class="image-select"
+        for-signup="true"
+        result-data-uri="$ctrl.setImageContent(dataUri)"
+        ng-if="!$ctrl.item.id">
+        <span class="invalid"
+              ng-show="imageform['image-file'].$error.maxSize"
+              >image size is too large (max=10MB)</span>
+      </sd-image-loader>
+      <span class="invalid">{{$ctrl.item.errors.content_type}}</span>
+      <span class="invalid">{{$ctrl.item.errors.content}}</span>
+    </div>
+  </div>
+
+  {{ $ctrl.signupForm | json }}
 
   <div id="signup-controls" class="row col-lg-12">
     <button ng-hide="$ctrl.id"

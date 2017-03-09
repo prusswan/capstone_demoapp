@@ -7,7 +7,9 @@ class User < ActiveRecord::Base
 
   has_many :roles, inverse_of: :user, dependent: :destroy
 
-  belongs_to :image
+  belongs_to :avatar, class_name: Image, foreign_key: :image_id, inverse_of: :user
+
+  # accepts_nested_attributes_for :avatar
 
   scope :with_images, -> { where.not(image_id: nil) }
 
@@ -38,7 +40,7 @@ class User < ActiveRecord::Base
   end
 
   def image_url
-    Rails.application.routes.url_helpers.image_content_path(self.image) if image_id
+    Rails.application.routes.url_helpers.image_content_path(self.avatar) if image_id
   end
 
   def token_validation_response

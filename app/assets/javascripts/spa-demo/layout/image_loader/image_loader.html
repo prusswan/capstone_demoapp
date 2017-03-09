@@ -1,31 +1,35 @@
-<div class="crop-area" ng-show="$ctrl.file">
- <ui-cropper image="$ctrl.file"
-             result-image="$ctrl.dataUri"
-             url-blob="$ctrl.objectUrl"
-             result-image-format="'image/jpeg'"
-             area-type="rectangle"
-             aspect-ratio="3/2"
-             result-image-size="{w:1200,h:800}">
- </ui-cropper>
+<div class="form-group">
+  <div class="crop-area" ng-show="$ctrl.file">
+    <label>Adjust the image below:</label>
+    <ui-cropper image="$ctrl.file"
+               result-image="$ctrl.dataUri"
+               url-blob="$ctrl.objectUrl"
+               result-image-format="'image/jpeg'"
+               area-type="rectangle"
+               aspect-ratio="3/2"
+               result-image-size="{w:1200,h:800}">
+    </ui-cropper>
+  </div>
+  <input name="image-file"
+         type="file"
+         accept=".jpeg, .jpg"
+         ng-hide="$ctrl.file && !$ctrl.forSignup"
+         ng-required="!$ctrl.forSignup"
+         ngf-select
+         ng-model="$ctrl.file"
+         ngf-fix-orientation="true"
+         ngf-max-size="10MB"
+         ngf-model-options="{allowInvalid: true}"
+         >
 </div>
-<input name="image-file"
-       type="file"
-       accept=".jpeg"
-       ng-hide="$ctrl.file" 
-       required="true"
-       ngf-select
-       ng-model="$ctrl.file"
-       ngf-fix-orientation="true"
-       ngf-max-size="10MB"
-       ngf-model-options="{allowInvalid: true}"       
-       >
-<img class="img-responsive image-preview"
-     ng-src="{{$ctrl.objectUrl}}"
-     ng-show="$ctrl.file && $ctrl.objectUrl">         
-
+<div class="form-group" ng-show="$ctrl.file && $ctrl.objectUrl">
+  <label>Preview final image:</label>
+  <img class="img-responsive image-preview d-block"
+       ng-src="{{$ctrl.objectUrl}}">
+</div>
 <div ng-transclude></div>
 
 <!--
 <button ng-click="$ctrl.debug()">Debug</button>
--->         
+-->
 

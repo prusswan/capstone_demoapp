@@ -39,7 +39,11 @@
         function(response){
           vm.id = response.data.data.id;
           console.log("signup complete", response.data, vm);
-          $state.go("home");
+          Authn.activate().then(
+            function(response){
+              $state.go("home");
+            }
+          );
         },
         function(response){
           vm.signupForm["errors"]=response.data.errors;

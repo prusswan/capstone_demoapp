@@ -4,4 +4,5 @@ if @user
     json.role_name role[0]
     json.resource role[1]  if role[1]
   end
+  json.image_url image_url(@user.avatar) if @user.image_id
 end

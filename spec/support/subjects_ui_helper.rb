@@ -35,7 +35,7 @@ module SubjectsUiHelper
   end
 
   def visit_image image
-    unless page.has_css?("sd-image-editor .image-form span.image_id", 
+    unless page.has_css?("sd-image-editor .image-form span.image_id",
                           :text=>image.id,:visible=>false)
       visit "#{ui_path}/#/images/#{image.id}"
     end
@@ -48,11 +48,11 @@ module SubjectsUiHelper
   end
 
   def displayed_caption(image)
-    image.caption ? image.caption : "(no caption #{image.id})" 
+    image.caption ? image.caption : "(no caption #{image.id})"
   end
 
   def visit_thing thing
-    unless page.has_css?("sd-thing-editor .thing-form span.thing_id", 
+    unless page.has_css?("sd-thing-editor .thing-form span.thing_id",
                           :text=>thing.id,:visible=>false)
       visit "#{ui_path}/#/things/#{thing.id}"
     end
@@ -86,10 +86,14 @@ module SubjectsUiHelper
   def visit_things things
     visit "#{ui_path}/#/things/"
     within("sd-thing-selector", :wait=>5) do
-      if logged_in? 
+      if logged_in?
         expect(page).to have_css(".thing-list")
         expect(page).to have_css(".thing-list li",:count=>things.count, :wait=>5)
       end
     end
+  end
+
+  def visit_roles roles
+    visit "#{ui_path}/#/roles/"
   end
 end

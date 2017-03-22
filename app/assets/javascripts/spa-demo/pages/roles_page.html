@@ -1,0 +1,30 @@
+<div class="roles-page">
+  <h3>Roles</h3>
+  <div class="role-list row">
+    <div class="col-xs-12">
+      <table datatable="ng" class="row-border hover">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>User</th>
+          <th>Role Name</th>
+          <th>Model Name</th>
+          <th>Model ID</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="r in $resolve.roles | orderBy: ['user_id','role_name']">
+          <td>{{ r.id }}</td>
+          <td>{{ r.user | json }}</td>
+          <td>{{ r.role_name }}</td>
+          <td>{{ r.mname }}</td>
+          <td>{{ r.mid }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <sd-role-editor>
+    <form class="role-form row" name="roleform"></form>
+  </sd-role-editor>
+</div>

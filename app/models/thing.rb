@@ -6,4 +6,16 @@ class Thing < ActiveRecord::Base
 
   scope :not_linked, ->(image) { where.not(:id=>ThingImage.select(:thing_id)
                                                           .where(:image=>image)) }
+  def roles
+    Role.where(mname: Thing, mid: self.id)
+  end
+
+  def members
+    roles.members
+  end
+
+  def organizers
+    roles.organizers
+  end
+
 end

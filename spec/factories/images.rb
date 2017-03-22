@@ -33,6 +33,10 @@ FactoryGirl.define do
                     :user_id=>image.creator_id)
       end
     end
+
+    trait :with_avatar do
+      image_content { FactoryGirl.attributes_for(:image_content, :random_avatar) }
+    end
   end
 
 end

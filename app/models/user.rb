@@ -7,18 +7,24 @@ class User < ActiveRecord::Base
 
   has_many :roles, inverse_of: :user, dependent: :destroy
 
-  def has_role(role_list, mname=nil, mid=nil) 
+  belongs_to :avatar, class_name: Image, foreign_key: :image_id, inverse_of: :user
+
+  # accepts_nested_attributes_for :avatar
+
+  scope :with_images, -> { where.not(image_id: nil) }
+
+  def has_role(role_list, mname=nil, mid=nil)
     role_names=roles.relevant(mname, mid).map {|r| r.role_name}
     (role_names & role_list).any?
   end
 
   def add_role role_name, object
     if object.is_a?(Class)
-      self.roles.new(:role_name=>role_name,
+      self.roles.find_or_initialize_by(:role_name=>role_name,
                      :mname=>object.name,
                      :mid=>nil)
     else
-      self.roles.new(:role_name=>role_name,
+      self.roles.find_or_initialize_by(:role_name=>role_name,
                      :mname=>object.model_name.name,
                      :mid=>object.id)
     end
@@ -31,5 +37,15 @@ class User < ActiveRecord::Base
 
   def is_admin?
      roles.where(:role_name=>Role::ADMIN).exists?
+  end
+
+  def image_url
+    Rails.application.routes.url_helpers.image_content_path(self.avatar) if image_id
+  end
+
+  def token_validation_response
+    self.as_json(except: [
+      :tokens, :created_at, :updated_at
+    ], methods: :image_url)
   end
 end

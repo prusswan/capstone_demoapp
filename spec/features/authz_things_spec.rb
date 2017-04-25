@@ -10,9 +10,10 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
   let(:organizer)     { originator }
   let(:member)        { create_user }
   let(:authenticated) { create_user }
+  let!(:normal_user)   { create_user }
   let(:thing_props)   { FactoryGirl.attributes_for(:thing) }
-  let(:things)        { FactoryGirl.create_list(:thing, 3, 
-                                                :with_roles, 
+  let(:things)        { FactoryGirl.create_list(:thing, 3,
+                                                :with_roles,
                                                 :originator_id=>originator[:id],
                                                 :member_id=>member[:id]) }
   let(:thing)         { things[0] }
@@ -110,7 +111,7 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
 
   shared_examples "cannot see details" do
     it "hides details" do
-      within("sd-thing-editor .thing-form") do 
+      within("sd-thing-editor .thing-form") do
         expect(page).to have_field("thing-name", :with=>thing.name)
         expect(page).to have_field("thing-desc", :with=>thing.description)
         expect(page).to have_field("thing-notes",:visible=>false)
@@ -119,7 +120,7 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
   end
   shared_examples "can see details" do |readonly|
     it "shows details" do
-      within("sd-thing-editor .thing-form") do 
+      within("sd-thing-editor .thing-form") do
         expect(page).to have_field("thing-name", :with=>thing.name)
         expect(page).to have_field("thing-desc", :with=>thing.description)
         expect(page).to have_field("thing-notes", :visible=>true, :readonly=>readonly)
@@ -129,7 +130,7 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
 
   shared_examples "cannot update thing" do
     it "fields read-only" do
-      within("sd-thing-editor .thing-form") do 
+      within("sd-thing-editor .thing-form") do
         expect(page).to have_field("thing-name", :with=>thing.name, :readonly=>true)
         expect(page).to have_field("thing-desc", :with=>thing.description, :readonly=>true)
         if page.has_field?("thing-notes")
@@ -209,27 +210,35 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
     end
   end
 
+  shared_examples "can see members of thing" do
+    it "sees list of members" do
+      within("sd-thing-editor .thing-form") do
+        expect(page).to have_css(".thing-members")
+      end
+    end
+  end
+
   context "no thing selected" do
     after(:each) { logout }
 
     context "unauthenticated user" do
       before(:each) { visit_things things }
       it_behaves_like "cannot list things"
-      it_behaves_like "displays correct buttons for role", 
-          [], 
+      it_behaves_like "displays correct buttons for role",
+          [],
           ["Create Thing", "Clear Thing", "Update Thing", "Delete Thing"]
     end
     context "authenticated user" do
       before(:each) { login authenticated; visit_things things}
       it_behaves_like "cannot list things"
-      it_behaves_like "displays correct buttons for role", 
+      it_behaves_like "displays correct buttons for role",
           [],
           ["Create Thing"], ["Clear Thing", "Update Thing", "Delete Thing"]
     end
     context "originator user" do
       before(:each) { login originator; visit_things things }
-      it_behaves_like "displays correct buttons for role", 
-          ["Create Thing"], 
+      it_behaves_like "displays correct buttons for role",
+          ["Create Thing"],
           ["Clear Thing", "Update Thing", "Delete Thing"]
       it_behaves_like "can list things"
       it_behaves_like "organizer has invalid thing"
@@ -237,8 +246,8 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
     end
     context "admin user" do
       before(:each) { login admin; visit_things things }
-      it_behaves_like "displays correct buttons for role", 
-          [], 
+      it_behaves_like "displays correct buttons for role",
+          [],
           ["Create Thing", "Clear Thing", "Update Thing", "Delete Thing"]
       it_behaves_like "can list things"
     end
@@ -267,7 +276,7 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
 
       context "anonymous user" do
         before(:each) { visit "#{ui_path}/#/things/#{thing.id}" }
-        it_behaves_like "displays correct buttons for role", 
+        it_behaves_like "displays correct buttons for role",
             [],
             ["Clear Thing"], ["Create Thing", "Update Thing", "Delete Thing"]
         it_behaves_like "cannot see details"
@@ -275,7 +284,7 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
 
       context "authenticated user" do
         before(:each) { visit "#{ui_path}/#/things/#{thing.id}" }
-        it_behaves_like "displays correct buttons for role", 
+        it_behaves_like "displays correct buttons for role",
             [],
             ["Clear Thing", "Create Thing", "Update Thing", "Delete Thing"]
         it_behaves_like "cannot see details"
@@ -283,19 +292,21 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
 
       context "member user" do
         before(:each) { login member; select_thing }
-        it_behaves_like "displays correct buttons for role", 
-            ["Clear Thing"], 
+        it_behaves_like "displays correct buttons for role",
+            ["Clear Thing"],
             ["Create Thing", "Update Thing", "Delete Thing"]
         it_behaves_like "displays thing"
         it_behaves_like "can see details", true
         it_behaves_like "can clear thing"
         it_behaves_like "cannot update thing"
+
+        it_behaves_like "can see members of thing"
       end
 
       context "organizer user" do
         before(:each) { login organizer; select_thing }
-        it_behaves_like "displays correct buttons for role", 
-            ["Clear Thing", "Update Thing", "Delete Thing"], 
+        it_behaves_like "displays correct buttons for role",
+            ["Clear Thing", "Update Thing", "Delete Thing"],
             ["Create Thing"]
         it_behaves_like "displays thing"
         it_behaves_like "can see details", false
@@ -303,18 +314,52 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
         it_behaves_like "can update thing"
         it_behaves_like "cannot update to invalid thing"
         it_behaves_like "can delete thing"
+
+        it_behaves_like "can see members of thing"
+
+        context "role assignment" do
+          it "can modify member assignments for thing" do
+            within('.thing-members') do
+              expect(page).to have_selector('li.list-group-item', count: 1)
+              click_button("Remove Member")
+              expect(page).to have_selector('li.list-group-item', count: 0)
+            end
+          end
+
+          it "can modify organizer assignments for thing" do
+            within('.thing-organizers') do
+              expect(page).to have_selector('li.list-group-item', count: 1)
+              click_button("Remove Organizer")
+              expect(page).to have_selector('li.list-group-item', count: 0)
+            end
+          end
+        end
       end
 
       context "admin user" do
         before(:each) { login admin; select_thing }
-        it_behaves_like "displays correct buttons for role", 
-            ["Clear Thing", "Delete Thing"], 
+        it_behaves_like "displays correct buttons for role",
+            ["Clear Thing", "Delete Thing"],
             ["Create Thing", "Update Thing"]
         it_behaves_like "displays thing"
         it_behaves_like "can see details", true
         it_behaves_like "can clear thing"
         it_behaves_like "cannot update thing"
         it_behaves_like "can delete thing"
+
+        it "can assign originator role to thing" do
+          expect(page).not_to have_selector('.thing-originators li.list-group-item', count: 2)
+          select normal_user[:email]
+          click_button("Set Originator")
+          expect(page).to have_selector('.thing-originators li.list-group-item', count: 2)
+
+          # using_wait_time 10 do
+          #   expect do
+          #     select normal_user[:email]
+          #     click_button("Set Originator")
+          #   end.to change { have_selector('.thing-originators li.list-group-item', count: 1).length > 0 }.from(true).to(false)
+          # end
+        end
       end
     end
 
@@ -324,18 +369,18 @@ RSpec.feature "AuthzThings", type: :feature, js:true do
         select_thing
         within("sd-thing-editor .thing-form") do
           expect(page).to have_field("thing-name", :with=>thing.name)
-          expect(page).to have_field("thing-desc", :visible=>true, 
+          expect(page).to have_field("thing-desc", :visible=>true,
                                                    :readonly=>false)
-          expect(page).to have_field("thing-notes",:visible=>true, 
+          expect(page).to have_field("thing-notes",:visible=>true,
                                                    :readonly=>false)
           expect(page).to have_css("button");
         end
 
         logout
         within("sd-thing-editor .thing-form") do
-          expect(page).to have_field("thing-name", :with=>thing.name, 
+          expect(page).to have_field("thing-name", :with=>thing.name,
                                                    :readonly=>true)
-          expect(page).to have_field("thing-desc", :with=>thing.description, 
+          expect(page).to have_field("thing-desc", :with=>thing.description,
                                                    :readonly=>true)
           expect(page).to have_no_field("thing-notes")
           expect(page).to have_no_css("button");

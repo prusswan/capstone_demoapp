@@ -6,10 +6,13 @@ class Role < ActiveRecord::Base
 
   belongs_to :user, inverse_of: :roles
 
-  scope :relevant, ->(model_name, model_id) { 
-    where("mname is null or (mname=:mname and (mid is null or mid=:mid))", 
+  scope :relevant, ->(model_name, model_id) {
+    where("mname is null or (mname=:mname and (mid is null or mid=:mid))",
       :mname=>model_name, :mid=>model_id)
   }
 
   scope :application, ->{ where("mid is null") }
+
+  scope :organizers, ->{ where(role_name: ORGANIZER) }
+  scope :members, ->{ where(role_name: MEMBER) }
 end

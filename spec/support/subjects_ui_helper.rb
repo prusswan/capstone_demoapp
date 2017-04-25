@@ -9,7 +9,7 @@ module SubjectsUiHelper
   end
 
   def image_caption image
-    image.caption || "(no caption #{image.id})" 
+    image.caption || "(no caption #{image.id})"
   end
 
   def get_linkables image
@@ -35,7 +35,7 @@ module SubjectsUiHelper
   end
 
   def visit_image image
-    unless page.has_css?("sd-image-editor .image-form span.image_id", 
+    unless page.has_css?("sd-image-editor .image-form span.image_id",
                           :text=>image.id,:visible=>false)
       visit "#{ui_path}/#/images/#{image.id}"
     end
@@ -48,11 +48,11 @@ module SubjectsUiHelper
   end
 
   def displayed_caption(image)
-    image.caption ? image.caption : "(no caption #{image.id})" 
+    image.caption ? image.caption : "(no caption #{image.id})"
   end
 
   def visit_thing thing
-    unless page.has_css?("sd-thing-editor .thing-form span.thing_id", 
+    unless page.has_css?("sd-thing-editor .thing-form span.thing_id",
                           :text=>thing.id,:visible=>false)
       visit "#{ui_path}/#/things/#{thing.id}"
     end
@@ -86,7 +86,7 @@ module SubjectsUiHelper
   def visit_things things
     visit "#{ui_path}/#/things/"
     within("sd-thing-selector", :wait=>5) do
-      if logged_in? 
+      if logged_in?
         expect(page).to have_css(".thing-list")
         expect(page).to have_css(".thing-list li",:count=>things.count, :wait=>5)
       end
@@ -117,7 +117,7 @@ module SubjectsUiHelper
     @thing_distances=[]
     shared_images=[]
     user=FactoryGirl.create(:user)
-    (1..3).each do 
+    (1..3).each do
       thing=FactoryGirl.create(:thing, :with_fields)
       User.find(member[:id]).add_role(Role::MEMBER, thing).save
       if image=shared_images.sample
@@ -131,8 +131,8 @@ module SubjectsUiHelper
         @image_distances << image.distance_from(origin.position)
       end
       thing_without_primary_image=FactoryGirl.create(:thing)
-      thing_without_primary_image.thing_images.create(:priority=>5, 
-                                                      :image=>shared_images.sample, 
+      thing_without_primary_image.thing_images.create(:priority=>5,
+                                                      :image=>shared_images.sample,
                                                       :creator_id=>user[:id])
     end
     FactoryGirl.create_list(:image, 3).each do |true_orphan_image|
@@ -155,7 +155,7 @@ module SubjectsUiHelper
       selector=["ul.images span.image_id", {visible:false, text:image_id}]
       expect(page).to have_css(*selector)
       id=!thing_id ? first(*selector) : all(*selector).select {|id|
-          id.find(:xpath, "..").has_css?("span.thing_id", 
+          id.find(:xpath, "..").has_css?("span.thing_id",
                                         {visible:false, text:thing_id})
         }.first
       id.find(:xpath,"..").click
@@ -192,5 +192,9 @@ module SubjectsUiHelper
     expect(page).to have_css("div#map")
     #wait for the map to appear
     expect(page).to have_css("div#map div.gm-style",:wait=>10)
+  end
+
+  def visit_roles roles
+    visit "#{ui_path}/#/roles/"
   end
 end

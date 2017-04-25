@@ -3,9 +3,11 @@ Rails.application.routes.draw do
   get 'authn/whoami', defaults: {format: :json}
   get 'authn/checkme'
 
-  mount_devise_token_auth_for 'User', at: 'auth'
+  mount_devise_token_auth_for 'User', at: 'auth', controllers: {
+    registrations: 'registrations'
+  }
 
-  scope :api, defaults: {format: :json}  do 
+  scope :api, defaults: {format: :json}  do
     resources :foos, except: [:new, :edit]
     resources :bars, except: [:new, :edit]
     resources :images, except: [:new, :edit] do
@@ -20,7 +22,18 @@ Rails.application.routes.draw do
     get 'geocoder/addresses' => "geocoder#addresses"
     get 'geocoder/positions' => "geocoder#positions"
     get 'subjects' => "thing_images#subjects"
-  end      
+
+    namespace :things, path: 'things(/:thing_id)' do
+      resources :roles, only: [:index, :create, :destroy], path: 'roles/:role_name', param: :user_id do
+        # collection do
+        #   get :members, :organizers
+        # end
+      end
+    end
+
+    resources :users, only: [:index]
+    resources :roles, only: [:index, :show]
+  end
 
   get "/client-assets/:name.:format", :to => redirect("/client/client-assets/%{name}.%{format}")
 #  get "/", :to => redirect("/client/index.html")

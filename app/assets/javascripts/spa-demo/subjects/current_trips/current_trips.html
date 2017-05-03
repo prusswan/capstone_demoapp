@@ -1,0 +1,9 @@
+<ul class="items trips">
+  <li ng-repeat="ti in $ctrl.things"
+      ng-class="{selected: $ctrl.isCurrentThing($index)}">
+    <a ng-click="$ctrl.tripClicked($index)">
+      <span class="id trip_id">{{ti.id}}</span>
+      <span class="name">{{ti.thing_name}}</span>
+    </a>
+  </li>
+</ul>

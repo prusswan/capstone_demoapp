@@ -4,4 +4,6 @@ class TripSegment < ActiveRecord::Base
 
   validates :position, uniqueness: {scope: :trip_id, message: 'should be unique within a trip'}
 
+  belongs_to :image
+  delegate :lat, :lng, to: :image
 end

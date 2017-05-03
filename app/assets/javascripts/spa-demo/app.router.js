@@ -32,6 +32,10 @@
         }]
       }
     })
+    .state("trips",{
+      url: "/trips/:id",
+      templateUrl: APP_CONFIG.trips_page_html
+    })
     .state("images",{
       url: "/images/:id",
       templateUrl: APP_CONFIG.images_page_html

@@ -33,6 +33,7 @@ Rails.application.routes.draw do
 
     resources :users, only: [:index]
     resources :roles, only: [:index, :show]
+    resources :trips, only: [:index, :show]
   end
 
   get "/client-assets/:name.:format", :to => redirect("/client/client-assets/%{name}.%{format}")

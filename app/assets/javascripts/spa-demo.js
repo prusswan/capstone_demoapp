@@ -55,6 +55,7 @@
 
 //= require spa-demo/subjects/subjects.module
 //= require spa-demo/subjects/roles/roles.service
+//= require spa-demo/subjects/trips/trips.service
 //= require spa-demo/subjects/users/users.service
 //= require spa-demo/subjects/images/images.service
 //= require spa-demo/subjects/images/images_authz.service

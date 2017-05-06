@@ -8,10 +8,11 @@
   CurrentTrips.$inject = ["$rootScope","$q",
                              "$resource",
                              "spa-demo.geoloc.currentOrigin",
+                             "spa-demo.subjects.Trip",
                              "spa-demo.config.APP_CONFIG"];
 
-  function CurrentTrips($rootScope, $q, $resource, currentOrigin, APP_CONFIG) {
-    var subjectsResource = $resource(APP_CONFIG.server_url + "/api/trips",{},{
+  function CurrentTrips($rootScope, $q, $resource, currentOrigin, Trip, APP_CONFIG) {
+    var subjectsResource = $resource(APP_CONFIG.server_url + "/api/subjects",{},{
       query: { cache:false, isArray:true }
     });
     var service = this;
@@ -20,9 +21,12 @@
     service.imageIdx = null;
     service.things = [];
     service.thingIdx = null;
+    service.trips = [];
+    service.tripIdx = null;
     service.refresh = refresh;
     service.isCurrentImageIndex = isCurrentImageIndex;
     service.isCurrentThingIndex = isCurrentThingIndex;
+    service.isCurrentTripIndex = isCurrentTripIndex;
     service.nextThing = nextThing;
     service.previousThing = previousThing;
 
@@ -51,6 +55,8 @@
         function(){
           service.setCurrentImageForCurrentThing();
         });
+
+      refreshTrips();
     }
 
     function refreshImages(params) {
@@ -66,6 +72,7 @@
         });
       return result.$promise;
     }
+
     function refreshThings(params) {
       var result=subjectsResource.query(params);
       result.$promise.then(
@@ -80,6 +87,16 @@
       return result.$promise;
     }
 
+    function refreshTrips() {
+      var result=Trip.query();
+      result.$promise.then(
+        function(trips){
+          service.trips=trips;
+          console.log("refreshTrips", service);
+        }
+      );
+    }
+
     function isCurrentImageIndex(index) {
       //console.log("isCurrentImageIndex", index, service.imageIdx === index);
       return service.imageIdx === index;
@@ -87,6 +104,9 @@
     function isCurrentThingIndex(index) {
       //console.log("isCurrentThingIndex", index, service.thingIdx === index);
       return service.thingIdx === index;
+    }
+    function isCurrentTripIndex(index) {
+      return service.tripIdx === index;
     }
     function nextThing() {
       if (service.thingIdx !== null) {
@@ -113,6 +133,9 @@
   CurrentTrips.prototype.getThings = function() {
     return this.things;
   }
+  CurrentTrips.prototype.getTrips = function() {
+    return this.trips;
+  }
   CurrentTrips.prototype.getCurrentImageIndex = function() {
      return this.imageIdx;
   }
@@ -121,6 +144,9 @@
   }
   CurrentTrips.prototype.getCurrentThing = function() {
     return this.things.length > 0 ? this.things[this.thingIdx] : null;
+  }
+  CurrentTrips.prototype.getCurrentTrip = function() {
+    return this.trips.length > 0 ? this.trips[this.tripIdx] : null;
   }
   CurrentTrips.prototype.getCurrentImageId = function() {
     var currentImage = this.getCurrentImage();
@@ -164,6 +190,23 @@
 
     console.log("setCurrentThing", this.thingIdx, this.getCurrentThing());
     return this.getCurrentThing();
+  }
+
+  CurrentTrips.prototype.setCurrentTrip = function(index, skipImage) {
+    if (index >= 0 && this.trips.length > 0) {
+      this.tripIdx = (index < this.trips.length) ? index : 0;
+    } else if (index < 0 && this.trips.length > 0) {
+      this.tripIdx = this.trips.length - 1;
+    } else {
+      this.tripIdx=null;
+    }
+
+    // if (!skipImage) {
+    //   this.setCurrentImageForCurrentThing();
+    // }
+
+    console.log("setCurrentTrip", this.tripIdx, this.getCurrentTrip());
+    return this.getCurrentTrip();
   }
 
   CurrentTrips.prototype.setCurrentThingForCurrentImage = function() {

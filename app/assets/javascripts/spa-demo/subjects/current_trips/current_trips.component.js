@@ -21,30 +21,30 @@
   }
 
   CurrentTripsController.$inject = ["$scope",
-                                     "spa-demo.subjects.currentSubjects"];
-  function CurrentTripsController($scope,currentSubjects) {
+                                     "spa-demo.subjects.currentTrips"];
+  function CurrentTripsController($scope,currentTrips) {
     var vm=this;
     vm.thingClicked = thingClicked;
     vm.tripClicked = tripClicked;
-    vm.isCurrentThing = currentSubjects.isCurrentThingIndex;
-    vm.isCurrentTrip = currentSubjects.isCurrentTripIndex;
+    vm.isCurrentThing = currentTrips.isCurrentThingIndex;
+    vm.isCurrentTrip = currentTrips.isCurrentTripIndex;
 
     vm.$onInit = function() {
       console.log("CurrentTripsController",$scope);
     }
     vm.$postLink = function() {
       $scope.$watch(
-        function() { return currentSubjects.getTrips(); },
+        function() { return currentTrips.getTrips(); },
         function(trips) { vm.trips = trips; }
       );
     }
     return;
     //////////////
     function thingClicked(index) {
-      currentSubjects.setCurrentThing(index);
+      currentTrips.setCurrentThing(index);
     }
     function tripClicked(index) {
-      currentSubjects.setCurrentTrip(index);
+      currentTrips.setCurrentTrip(index);
     }
 
   }
@@ -53,10 +53,10 @@
                                           "spa-demo.geoloc.currentOrigin",
                                           "spa-demo.geoloc.myLocation",
                                           "spa-demo.geoloc.Map",
-                                          "spa-demo.subjects.currentSubjects",
+                                          "spa-demo.subjects.currentTrips",
                                           "spa-demo.config.APP_CONFIG"];
   function CurrentTripsMapController($scope, $q, $element,
-                                        currentOrigin, myLocation, Map, currentSubjects,
+                                        currentOrigin, myLocation, Map, currentTrips,
                                         APP_CONFIG) {
     var vm=this;
 
@@ -72,13 +72,13 @@
         });
 
       $scope.$watch(
-        function(){ return currentSubjects.getImages(); },
+        function(){ return currentTrips.getImages(); },
         function(images) {
           vm.images = images;
           displaySubjects();
         });
       $scope.$watch(
-        function(){ return currentSubjects.getCurrentImage(); },
+        function(){ return currentTrips.getCurrentImage(); },
         function(link) {
           if (link) {
             vm.setActiveMarker(link.thing_id, link.image_id);
@@ -92,7 +92,7 @@
         function(marker) {
           if (marker) {
             console.log("map changed markers", marker);
-            currentSubjects.setCurrentSubjectId(marker.thing_id, marker.image_id);
+            currentTrips.setCurrentSubjectId(marker.thing_id, marker.image_id);
           }
         });
       $scope.$watch(

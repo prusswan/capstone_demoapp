@@ -46,17 +46,17 @@
         params["miles"]=currentOrigin.getDistance();
       }
       params["order"]="ASC";
-      console.log("refresh",params);
+      console.log("refresh currentTrips",params);
 
-      var p1=refreshImages(params);
-      params["subject"]="thing";
-      var p2=refreshThings(params);
-      $q.all([p1,p2]).then(
-        function(){
-          service.setCurrentImageForCurrentThing();
-        });
+      // var p1=refreshImages(params);
+      // params["subject"]="thing";
+      // var p2=refreshThings(params);
+      // $q.all([p1,p2]).then(
+      //   function(){
+      //     service.setCurrentImageForCurrentThing();
+      //   });
 
-      refreshTrips();
+      refreshTrips(params);
     }
 
     function refreshImages(params) {
@@ -87,14 +87,19 @@
       return result.$promise;
     }
 
-    function refreshTrips() {
-      var result=Trip.query();
+    function refreshTrips(params) {
+      var result=Trip.query(params);
       result.$promise.then(
         function(trips){
           service.trips=trips;
+          service.version += 1;
+          if (!service.tripIdx || service.tripIdx > trips.length) {
+            service.tripIdx=0;
+          }
           console.log("refreshTrips", service);
         }
       );
+      return result.$promise;
     }
 
     function isCurrentImageIndex(index) {

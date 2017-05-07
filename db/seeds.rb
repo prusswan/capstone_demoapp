@@ -8,7 +8,9 @@
 
 Rake::Task['ptourist:reset_all'].invoke
 
-image_ids = Image.select(:id).map(&:id)
+image_ids = Image.select("distinct on (lat, lng) *")
+  .reject{|i| i.lat.nil? || i.lng.nil?}
+  .map(&:id)
 
 (1..5).each do |count|
   t = Trip.find_or_create_by(name: "Trip #{count}")

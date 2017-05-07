@@ -169,11 +169,11 @@
       if (!vm.map) { return; }
       vm.map.clearMarkers();
       vm.map.clearPolylines();
-      // vm.map.displayOriginMarker(vm.originInfoWindow(vm.location));
+      vm.map.displayOriginMarker(vm.originInfoWindow(vm.location));
 
       console.log("displayTrip", trip);
 
-      if (trip !== undefined) {
+      if (trip !== undefined && trip != null) {
         angular.forEach(trip.segments, function(s, index){
           displayStop(s);
 

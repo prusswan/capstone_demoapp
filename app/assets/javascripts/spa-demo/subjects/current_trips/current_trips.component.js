@@ -78,6 +78,13 @@
           displaySubjects();
         });
       $scope.$watch(
+        function(){ return currentTrips.getTrips(); },
+        function(trips) {
+          vm.trips = trips;
+          // displayTrip();
+        });
+
+      $scope.$watch(
         function(){ return currentTrips.getCurrentImage(); },
         function(link) {
           if (link) {
@@ -86,6 +93,18 @@
             vm.setActiveMarker(null,null);
           }
         });
+
+      $scope.$watch(
+        function(){ return currentTrips.getCurrentTrip(); },
+        function(link) {
+          displayTrip(link);
+          if (link) {
+            vm.setActiveMarker(link.trip_id, link.image_id);
+          } else {
+            vm.setActiveMarker(null,null);
+          }
+        });
+
       $scope.$watch(
         function(){
             return vm.map ? vm.map.getCurrentMarker() : null; },
@@ -138,11 +157,31 @@
     function displaySubjects(){
       if (!vm.map) { return; }
       vm.map.clearMarkers();
+      vm.map.clearPolylines();
       vm.map.displayOriginMarker(vm.originInfoWindow(vm.location));
 
       angular.forEach(vm.images, function(ti){
         displaySubject(ti);
       });
+    }
+
+    function displayTrip(trip) {
+      if (!vm.map) { return; }
+      vm.map.clearMarkers();
+      vm.map.clearPolylines();
+      // vm.map.displayOriginMarker(vm.originInfoWindow(vm.location));
+
+      console.log("displayTrip", trip);
+
+      if (trip !== undefined) {
+        angular.forEach(trip.segments, function(s, index){
+          displayStop(s);
+
+          if (index > 0) {
+            displayPath(trip.segments[index-1],trip.segments[index]);
+          }
+        });
+      }
     }
 
     function displaySubject(ti) {
@@ -169,6 +208,27 @@
       }
       vm.map.displayMarker(markerOptions);
     }
+
+    function displayStop(s) {
+      var markerOptions = {
+        position: {
+          lng: s.lng,
+          lat: s.lat
+        },
+        trip_id: s.trip_id,
+        image_id: s.image_id
+      };
+      markerOptions.title = "Stop " + (s.position + 1) + ': ' + s.image_caption;
+      markerOptions.icon = APP_CONFIG.secondary_marker;
+      markerOptions.content = vm.imageInfoWindow(s);
+
+      vm.map.displayMarker(markerOptions);
+    }
+
+    function displayPath(start, end) {
+      var path = [{lng: start.lng, lat: start.lat}, {lng: end.lng, lat: end.lat}];
+      vm.map.displayPolyline(path);
+    }
   }
 
   CurrentTripsMapController.prototype.updateOrigin = function() {
@@ -180,18 +240,19 @@
     }
   }
 
-  CurrentTripsMapController.prototype.setActiveMarker = function(thing_id, image_id) {
+  CurrentTripsMapController.prototype.setActiveMarker = function(trip_id, image_id) {
     if (!this.map) {
       return;
-    } else if (!thing_id && !image_id) {
-      if (this.map.getCurrentMarker().title!=='origin') {
+    } else if (!trip_id && !image_id) {
+      var currentMarker = this.map.getCurrentMarker();
+      if (currentMarker == null || currentMarker.title!=='origin') {
         this.map.setActiveMarker(null);
       }
     } else {
       var markers=this.map.getMarkers();
       for (var i=0; i<markers.length; i++) {
         var marker=markers[i];
-        if (marker.thing_id === thing_id && marker.image_id === image_id) {
+        if (marker.trip_id === trip_id && marker.image_id === image_id) {
             this.map.setActiveMarker(marker);
             break;
         }

@@ -13,8 +13,9 @@
       service.options = {}
       service.markers = [];
       service.currentMarker = null;
+      service.lines = [];
       service.options = service.normalizeMapOptions(mapOptions);
-      service.map = new google.maps.Map(element, service.options);    
+      service.map = new google.maps.Map(element, service.options);
     }
 
     GeolocMap.prototype.normalizeMapOptions = function(mapOptions) {
@@ -40,7 +41,7 @@
         if (mapOptions.mapTypeId) {
           this.options.mapTypeId = mapOptions.mapTypeId;
           this.map.setMapTypeId(this.options.mapTypeId);
-        }        
+        }
       }
     };
 
@@ -58,6 +59,14 @@
       });
       this.markers = [];
     }
+
+    GeolocMap.prototype.clearPolylines = function() {
+      angular.forEach(this.lines, function(line){
+        line.setMap(null);
+      });
+      this.lines = [];
+    }
+
     GeolocMap.prototype.clearOriginMarker = function() {
       var m = this.originMarker;
       if (m) {
@@ -80,7 +89,7 @@
 
       //add an info pop-up
       var service=this;
-      var infoWindow=new google.maps.InfoWindow({content: markerOptions.content});                
+      var infoWindow=new google.maps.InfoWindow({content: markerOptions.content});
       var listener=marker.addListener('click', function(){
         console.log("map listener called");
         service.setActiveMarker(markerOptions);
@@ -100,12 +109,29 @@
       });
 
       //console.log("bounds", bounds);
-      this.map.fitBounds(bounds);        
+      this.map.fitBounds(bounds);
 
       return markerOptions;
     }
 
-    GeolocMap.prototype.displayOriginMarker = function(content) {      
+    GeolocMap.prototype.displayPolyline = function(path) {
+      if (!this.map) { return; }
+
+      var polylineOptions = {
+        path: path,
+        icons: [{
+          icon: {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW},
+          offset: '100%'
+        }]
+      }
+      var line = new google.maps.Polyline(polylineOptions);
+      this.lines.push(line);
+      line.setMap(this.map);
+
+      return polylineOptions;
+    }
+
+    GeolocMap.prototype.displayOriginMarker = function(content) {
       console.log("displayOriginMarker", content, this.options.center);
       if (!content) {
         content = "Origin";
@@ -129,7 +155,7 @@
         this.currentMarker.infoWindow.close();
       }
       if (markerOptions && markerOptions.infoWindow) {
-        markerOptions.infoWindow.open(this.map, markerOptions.marker);        
+        markerOptions.infoWindow.open(this.map, markerOptions.marker);
       }
       this.currentMarker = markerOptions;
     }
